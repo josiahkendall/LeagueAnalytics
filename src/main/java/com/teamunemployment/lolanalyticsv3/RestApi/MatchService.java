@@ -13,13 +13,13 @@ import retrofit.http.Path;
  */
 public interface MatchService {
     
-    @GET("/matchlist/by-summoner/{summonerId}?api_key={api_key}")
-    MatchList getMatchListForSummoner(@Path("summonerId") int summonerId, @Path("api_key") String api_key);
+    @GET("/matchlist/by-summoner/{summonerId}?api_key=18decaab-29c4-422f-9a84-19a53a4f3067")
+    MatchList getMatchListForSummoner(@Path("summonerId") int summonerId);
     
-    @GET("/match/{matchId}?api_key={api_key}")
-    MatchDetailsModel getMatchSummary(@Path("matchId") long matchId, @Path("api_key") String api_key);
+    @GET("/match/{matchId}?api_key=18decaab-29c4-422f-9a84-19a53a4f3067")
+    MatchDetailsModel getMatchSummary(@Path("matchId") long matchId);
     
-    @GET("/summoner/by-name/{name}?api_key={api_key}")
-    SummonerModel getSummonerByName(@Path("name") String name, @Path("api_key") String api_key);
+    @GET("/summoner/by-name/{name}?api_key=18decaab-29c4-422f-9a84-19a53a4f3067")
+    SummonerModel getSummonerByName(@Path("name") String name);
     
 }

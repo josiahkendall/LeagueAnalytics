@@ -5,7 +5,10 @@
  */
 package com.teamunemployment.lolanalytics.data.database;
 
+import com.google.appengine.api.utils.SystemProperty;
 import com.google.cloud.sql.jdbc.Driver;
+import com.teamunemployment.lolanalytics.data.statics;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -13,6 +16,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.sun.activation.registries.LogSupport.log;
 
 /**
  *
@@ -32,9 +37,10 @@ public class DBHelper {
      * Creates a default localhost connection;
      */
     public DBHelper() {
-        this.host = "jdbc:mysql://localhost:3306/local_lolanlaytics";
-        this.username = "root";
-        this.password = "Idnw2bh2";
+        // Parameters hidded due to repo being public on github. Statics class is not uploaded.
+        this.host = statics.DEFAULT_HOST;
+        this.username = statics.DEFAULT_USERNAME;
+        this.password = statics.DEFAULT_PASSWORD;
     }
     
     public DBHelper(String host, String username, String password) {
@@ -47,18 +53,49 @@ public class DBHelper {
      */
     public boolean Connect() {
         try {
-            connection = DriverManager.getConnection(host, username, password);
-            currentlyConnected = connection.isValid(1000);
-            return currentlyConnected;
-        } catch (SQLException sqlException) {
-            System.out.println("An error occured whist getting a connection to the database.\n"
-                    + "host: "+ host + "\n"
-                    + "username: " + username );
-            System.out.println(sqlException.getMessage());
-            return false;
-        } 
+            // Check if we are currently running in app engine, and set the appropriate parameters.
+            if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
+                String  url = System.getProperty("ae-cloudsql.cloudsql-database-url");
+                // App engine sql driver
+                Class.forName("com.mysql.jdbc.GoogleDriver");
+                try {
+                    connection = DriverManager.getConnection(url);
+                    currentlyConnected = connection.isValid(1000);
+                    return currentlyConnected;
+                } catch (SQLException sqlException) {
+                    log("An error occured whist getting a connection to the database.\n"
+                            + "host: "+ host + "\n"
+                            + "username: " + username );
+                    log(sqlException.getMessage());
+                    return false;
+                }
+            } else {
+                // Local MySQL instance to use during development.
+                Class.forName("com.mysql.jdbc.Driver");
+                // For some reason the local connection variable doesnt work, even though it seems to be correct. Therefore i use this connection method.
+                try {
+                    connection = DriverManager.getConnection(host, username, password);
+                    currentlyConnected = connection.isValid(1000);
+                    return currentlyConnected;
+                } catch (SQLException sqlException) {
+                    log("An error occured whist getting a connection to the database.\n"
+                            + "host: " + host + "\n"
+                            + "username: " + username);
+                    log(sqlException.getMessage());
+                    return false;
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+
     }
-    
+
+    /**
+     * Disconect from the SQL server.
+     */
     public void Disconnect() {
         try {
             connection.close();

@@ -5,7 +5,6 @@
  */
 package com.teamunemployment.lolanalytics.data.control.summoner;
 
-
 import org.junit.Test;
 
 /**

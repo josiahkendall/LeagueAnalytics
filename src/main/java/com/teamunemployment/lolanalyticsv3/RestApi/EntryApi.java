@@ -9,6 +9,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
+import com.google.appengine.api.utils.SystemProperty;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.teamunemployment.lolanalytics.data.control.CreepsPerMinDeltaControl;
@@ -34,7 +35,9 @@ import com.teamunemployment.lolanalytics.models.StringResponse;
 import com.teamunemployment.lolanalytics.models.SummonerModel;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit.Callback;
@@ -42,6 +45,8 @@ import retrofit.RestAdapter;
 import retrofit.appengine.UrlFetchClient;
 import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
+
+import javax.servlet.ServletException;
 
 
 /**
@@ -58,13 +63,58 @@ import retrofit.converter.GsonConverter;
         packagePath = ""))
 
 public class EntryApi {
-    
+
     /** A simple endpoint method that takes a name and says Hi back */
     @ApiMethod(name = "sayHi",httpMethod = ApiMethod.HttpMethod.GET,path = "test/{hi}" )
-    public StringResponse sayHi(@Named("hi") String hi) {
-        StringResponse response = new StringResponse();
-        response.setData("This is a test" + hi);
-        return response;
+    public StringResponse sayHi(@Named("hi") String hi) throws ServletException, ClassNotFoundException {
+        final String createTableSql = "CREATE TABLE IF NOT EXISTS visits ( visit_id INT NOT NULL "
+                + "AUTO_INCREMENT, user_ip VARCHAR(46) NOT NULL, timestamp DATETIME NOT NULL, "
+                + "PRIMARY KEY (visit_id) )";
+        final String createVisitSql = "INSERT INTO visits (user_ip, timestamp) VALUES (?, ?)";
+        final String selectSql = "SELECT user_ip, timestamp FROM visits ORDER BY timestamp DESC "
+                + "LIMIT 10";
+
+        String  url = System.getProperty("ae-cloudsql.cloudsql-database-url");
+        if (SystemProperty.environment.value() ==
+                SystemProperty.Environment.Value.Production) {
+            // Load the class that provides the new "jdbc:google:mysql://" prefix.
+            Class.forName("com.mysql.jdbc.GoogleDriver");
+           // url = "jdbc:google:mysql://your-project-id:your-instance-name/guestbook?user=root";
+        } else {
+            // Local MySQL instance to use during development.
+            Class.forName("com.mysql.jdbc.Driver");
+            url = System.getProperty("ae-cloudsql.local-database-url");
+            //url = "jdbc:mysql://127.0.0.1:3306/guestbook?user=root";
+        }
+
+        // TODO REMOVE THIS WHHEN WE DEPLOY TO APP ENGINE. Really need a solution.
+        String host = "jdbc:mysql://localhost:3306/local_lolanlaytics";
+        String user = "root";
+        String password =  "Idnw2bh2";
+
+       //try (Connection conn = DriverManager.getConnection(url);
+       try (Connection conn = DriverManager.getConnection(host, user, password);
+            PreparedStatement statementCreateVisit = conn.prepareStatement(createVisitSql)) {
+            conn.createStatement().executeUpdate(createTableSql);
+            String userIp = "123.456.78.9";
+            statementCreateVisit.setString(1, userIp);
+            statementCreateVisit.setTimestamp(2, new Timestamp(new Date().getTime()));
+            statementCreateVisit.executeUpdate();
+            String testResult = "";
+            try (ResultSet rs = conn.prepareStatement(selectSql).executeQuery()) {
+                while (rs.next()) {
+                    String savedIp = rs.getString("user_ip");
+                    String timeStamp = rs.getString("timestamp");
+                    testResult += "Time: " + timeStamp + " Addr: " + savedIp + "\n";
+                }
+                StringResponse firstResponse = new StringResponse();
+                firstResponse.setData(testResult);
+                return firstResponse;
+            }
+
+        } catch (SQLException e) {
+            throw new ServletException("SQL error", e);
+        }
     }
     private DBHelper dbHelper;
     private TimelineControl timelineControl;
@@ -150,7 +200,7 @@ public class EntryApi {
         RestAdapter serviceAdapter = builder.build();
 
         MatchService service = serviceAdapter.create(MatchService.class);
-        MatchList matchlist = service.getMatchListForSummoner(summonerId, statics.RIOT_API_KEY);
+        MatchList matchlist = service.getMatchListForSummoner(summonerId);
         
         return matchlist.matches;
     }
@@ -160,13 +210,31 @@ public class EntryApi {
         RestAdapter.Builder builder = new RestAdapter.Builder()
                 .setEndpoint("https://oce.api.pvp.net/api/lol/oce/v2.2")
                 .setConverter(new GsonConverter(new GsonBuilder().create()))
-                .setClient(new OkClient()); //UrlFetchClient
+                .setClient(new UrlFetchClient()); //UrlFetchClient
                   
         RestAdapter serviceAdapter = builder.build();
         MatchService service = serviceAdapter.create(MatchService.class);
-        MatchDetailsModel match = service.getMatchSummary(matchId, statics.RIOT_API_KEY);
+        MatchDetailsModel match = service.getMatchSummary(matchId);
         
         return match;
+    } 
+    
+    @ApiMethod(name = "FetchTopStats", httpMethod=ApiMethod.HttpMethod.GET, path = "FetchTopStats/{userId}")
+    public StringResponse FetchTopStats(@Named("userId") long userId) {
+        init();
+        StatisticsAPI.StatisticsApi statisticsApi = new StatisticsAPI.StatisticsApi(matchDetailsControl, matchSummaryControl);
+        GeneralStats stats = statisticsApi.FetchAndCalculateStatsForAUserAndRole(userId, "TOP");
+        
+        Result creepsFirst10 = new Result("Creep Score First Ten Minutes", stats.averageCsEarlyGameEnemy, stats.averageCsEarlyGame);
+        Result killsFirst10 = new Result("Kills First Ten Minutes", stats.averageKillsEnemy, stats.averageKills);
+        Result deathsFirst10 = new Result("Deaths First Ten Minutes", stats.averageDeathsEnemy, stats.averageDeaths);
+        String result = "["
+                + creepsFirst10.toString() + ","
+                + killsFirst10.toString() + ","
+                + deathsFirst10.toString() + "]";
+        StringResponse stringResponse = new StringResponse();
+        stringResponse.setData(result);
+        return stringResponse;
     } 
    
     

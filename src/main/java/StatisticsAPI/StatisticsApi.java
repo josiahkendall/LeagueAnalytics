@@ -246,6 +246,11 @@ public class StatisticsApi {
         }
     }
     
+    public GeneralStats FetchAndCalculateStatsForAUserAndRole(long userId, String role) {
+        GeneralStats stats = fetchAndCalculateStatsForAUserAndRoleUsingSummonerId(userId, role);
+        return stats;
+    }
+    
     /**
      * Fetch the head to head stats for our user.
      * @param summonerId
