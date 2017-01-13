@@ -5,6 +5,7 @@
  */
 package com.teamunemployment.lolanalytics.data.control.summoner;
 
+import com.teamunemployment.lolanalytics.data.control.Summoner;
 import org.junit.Test;
 
 /**
@@ -18,4 +19,10 @@ public class SummonerControlTests {
 
 //        summonerControl.
     }
+
+    @Test
+    public void TestThatWeCanAssertASummonerExistsInTheLocalDB() {
+      //  Summoner.SummonerInfoControl summonerInfoControl = new Summoner.SummonerInfoControl();
+    }
+
 }

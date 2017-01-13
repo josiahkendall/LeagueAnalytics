@@ -6,6 +6,7 @@
 package StatisticsAPI;
 
 import com.teamunemployment.lolanalytics.data.ComparisonResult;
+import com.teamunemployment.lolanalytics.data.SummonerTableAccessor;
 import com.teamunemployment.lolanalytics.data.control.MatchDetailsControl;
 import com.teamunemployment.lolanalytics.data.control.MatchSummaryControl;
 import com.teamunemployment.lolanalytics.data.control.Summoner.SummonerInfoControl;
@@ -30,12 +31,17 @@ public class StatisticsApi {
     
     private final MatchDetailsControl matchDetailsControl;
     private final MatchSummaryControl matchSummaryControl;
-    
-    public StatisticsApi(MatchDetailsControl matchDetailsControl, 
-            MatchSummaryControl matchSummaryControl) {
-        
+    private SummonerInfoControl summonerInfoControl;
+    private SummonerTableAccessor summonerTableAccessor;
+
+    public StatisticsApi(MatchDetailsControl matchDetailsControl,
+            MatchSummaryControl matchSummaryControl, SummonerInfoControl summonerInfoControl,
+            SummonerTableAccessor summonerTableAccessor) {
+
         this.matchDetailsControl = matchDetailsControl;
         this.matchSummaryControl = matchSummaryControl;
+        this.summonerInfoControl = summonerInfoControl;
+        this.summonerTableAccessor = summonerTableAccessor;
     }
     
     /**
@@ -83,7 +89,7 @@ public class StatisticsApi {
     /**
      * Get the average cpm in the first 10 for a summoner in a role for a certain 
      * season. (2011 - current).
-     * @param summonerId.
+     * @param summonerId
      * @param role The role we are limiting to.
      * @param season The season that we are limiting to.
      * @return The average.
@@ -231,12 +237,17 @@ public class StatisticsApi {
         SummonerInfo summonerInfo = summonerInfoControl.FetchSummonerInfo(summonerName);
         return summonerInfo.id;
     }
-    
-    
-    public GeneralStats FetchAndCalculateStatsForAUserAndRole(String userName, String role) {
+
+    /**
+     *
+     * @param userName
+     * @param role
+     * @return
+     */
+    public GeneralStats FetchAndCalculateStatsForAUserAndRole(String userName, String lane) {
         try {
             long summonerId = FetchSummonerId(userName);
-            GeneralStats stats = fetchAndCalculateStatsForAUserAndRoleUsingSummonerId(summonerId, role);
+            GeneralStats stats = fetchAndCalculateStatsForAUserAndRoleUsingSummonerId(summonerId, null, lane);
             return stats;
         } catch (IOException ex) {
             System.out.println("An eror occurred loading summonerId.");
@@ -245,9 +256,23 @@ public class StatisticsApi {
             return null;
         }
     }
+
+    public void LoadAndSaveSummoner(String userName) {
+        try {
+            SummonerInfo summonerInfo = summonerInfoControl.FetchSummonerInfo(userName);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     
-    public GeneralStats FetchAndCalculateStatsForAUserAndRole(long userId, String role) {
-        GeneralStats stats = fetchAndCalculateStatsForAUserAndRoleUsingSummonerId(userId, role);
+    public GeneralStats FetchAndCalculateStatsForAUserAndLane(long userId, String lane) {
+        GeneralStats stats  = fetchAndCalculateStatsForAUserAndRoleUsingSummonerId(userId, null, lane);
+        return stats;
+    }
+
+    public GeneralStats FetchAndCalculateStatsForAUserAndLaneAndRole(long userId, String lane, String role) {
+        GeneralStats stats  = fetchAndCalculateStatsForAUserAndRoleUsingSummonerId(userId, role, lane);
         return stats;
     }
     
@@ -257,8 +282,13 @@ public class StatisticsApi {
      * @param role
      * @return 
      */
-    private GeneralStats fetchAndCalculateStatsForAUserAndRoleUsingSummonerId(long summonerId, String role) {
-        ArrayList<Long> ids = matchDetailsControl.GetTwentyRecentMatchIdsForSpecifiedRole(summonerId, role);
+    private GeneralStats fetchAndCalculateStatsForAUserAndRoleUsingSummonerId(long summonerId, String role, String lane) {
+        ArrayList<Long> ids = null;
+        if (role == null) {
+            ids = matchDetailsControl.GetTwentyRecentMatchIdsForSpecifiedRole(summonerId, lane);
+        } else {
+            ids = matchDetailsControl.GetTwentyRecentMatchIdsForSpecifiedRole(summonerId, lane, role);
+        }
         GeneralStats generalStats = new GeneralStats();
         int count = 0;
         
@@ -292,7 +322,12 @@ public class StatisticsApi {
             long id = idsIterator.next();
             
             // Fetch the match head to head details.
-            HeadToHeadStats stats = matchDetailsControl.fetchHeadToHeadStatsForMatch(id, role, summonerId);
+            HeadToHeadStats stats = null;
+            if (role == null) {
+                stats = matchDetailsControl.fetchHeadToHeadStatsForMatch(id, lane, summonerId);
+            } else {
+                stats = matchDetailsControl.fetchHeadToHeadStatsForMatch(id, lane, role, summonerId);
+            }
             csTenMe += stats.csTenMe;
             csTotalMe += stats.csTotalMe;
             csTwentyMe += stats.csTwentyMe;

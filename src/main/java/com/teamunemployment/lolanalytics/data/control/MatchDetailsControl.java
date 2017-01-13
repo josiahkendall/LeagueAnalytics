@@ -251,13 +251,57 @@ public class MatchDetailsControl {
         
         return matchIds;
     }
+
+    /**
+     * Get the most recent 20 matches for a summoner matching the specific role.
+     * @param summonerId
+     * @param role e.g JUNGLE
+     * @return
+     */
+    public ArrayList<Long> GetTwentyRecentMatchIdsForSpecifiedRole(long summonerId, String lane, String role) {
+        ArrayList<Long> matchIds = new ArrayList<>();
+        String queryString = String.format(
+                "select * from matchdetailsmodel \n" +
+                        "join matchmarticipantsummaryjunction \n" +
+                        "on matchdetailsmodel.MatchId = matchmarticipantsummaryjunction.MatchId\n" +
+                        "join participantsummary \n" +
+                        "on matchmarticipantsummaryjunction.ParticipantSummaryId = participantsummary.Id\n" +
+                        "join timeline \n" +
+                        "on ParticipantSummary.TimelineId = timeline.Id\n" +
+                        "join goldpermindeltas\n" +
+                        "on GoldPerMinDeltaId = goldpermindeltas.Id\n" +
+                        "where summonerId = %d and Lane = '%s' and role = '%s'\n" +
+                        "order by MatchCreation DESC\n" +
+                        "Limit 20;",
+                summonerId,
+                lane,
+                role
+        );
+
+        try {
+            ResultSet result = dbHelper.ExecuteSqlQuery(queryString);
+            while (result.next()) {
+                Long matchId = result.getLong("MatchId");
+                matchIds.add(matchId);
+            }
+        } catch (SQLException ex) {
+            System.out.println("An error occurred Getting recent 20 matches for a summoner with specified role: " + role);
+            ex.printStackTrace();
+        } catch (IllegalStateException ex) {
+            System.out.println("An error occurred Getting recent 20 matches for a summoner with specified role: " + role);
+            ex.printStackTrace();
+        }
+
+        return matchIds;
+    }
+
     /**
      * Fetch the stats for a summoner in a game, as well as the stats for their opponent.
      * @param matchId
      * @param role
      * @return The head to head stats.
      */
-    public HeadToHeadStats fetchHeadToHeadStatsForMatch(long matchId, String role, long summonerId) {
+    public HeadToHeadStats fetchHeadToHeadStatsForMatch(long matchId, String lane, long summonerId) {
         HeadToHeadStats headToHead = new HeadToHeadStats();
         String queryString = String.format(
                 "select goldpermindeltas.ZeroToTen as 'gpm10', goldpermindeltas.TenToTwenty as 'gpm20', summonerId, stats.Kills, stats.Deaths, creepspermindeltas.TenToTwenty, creepspermindeltas.ZeroToTen, MinionsKilled from matchdetailsmodel \n" +
@@ -276,7 +320,7 @@ public class MatchDetailsControl {
                 "where matchdetailsmodel.MatchId = %d and Lane = '%s'" +
                 "Limit 20;",
                 matchId,
-                role   
+                lane
             );
         
         try {
@@ -304,13 +348,77 @@ public class MatchDetailsControl {
                 }
             }
         } catch (SQLException ex) {
+            System.out.println("An error occurred Getting recent 20 matches for a summoner with specified role: " + lane);
+            ex.printStackTrace();
+        } catch (IllegalStateException ex) {
+            System.out.println("An error occurred Getting recent 20 matches for a summoner with specified role: " + lane);
+            ex.printStackTrace();
+        }
+        
+        return headToHead;
+    }
+
+    /**
+     * Fetch the stats for a summoner in a game, as well as the stats for their opponent.
+     * @param matchId
+     * @param role
+     * @return The head to head stats.
+     */
+    public HeadToHeadStats fetchHeadToHeadStatsForMatch(long matchId, String lane, String role, long summonerId) {
+        HeadToHeadStats headToHead = new HeadToHeadStats();
+        String queryString = String.format(
+                "select goldpermindeltas.ZeroToTen as 'gpm10', goldpermindeltas.TenToTwenty as 'gpm20', summonerId, stats.Kills, stats.Deaths, creepspermindeltas.TenToTwenty, creepspermindeltas.ZeroToTen, MinionsKilled from matchdetailsmodel \n" +
+                        "join matchmarticipantsummaryjunction \n" +
+                        "on matchdetailsmodel.MatchId = matchmarticipantsummaryjunction.MatchId\n" +
+                        "join participantsummary \n" +
+                        "on matchmarticipantsummaryjunction.ParticipantSummaryId = participantsummary.Id\n" +
+                        "join timeline \n" +
+                        "on ParticipantSummary.TimelineId = timeline.Id\n" +
+                        "join stats\n" +
+                        "on stats.Id = StatId\n" +
+                        "join creepspermindeltas\n" +
+                        "on creepspermindeltas.Id = CreepsPerMinDeltaId\n" +
+                        "join goldpermindeltas\n" +
+                        "on GoldPerMinDeltaId = goldpermindeltas.Id\n" +
+                        "where matchdetailsmodel.MatchId = %d and Lane = '%s' and Role = '%s'" +
+                        "Limit 20;",
+                matchId,
+                lane,
+                role
+        );
+
+        try {
+            ResultSet result = dbHelper.ExecuteSqlQuery(queryString);
+            while (result.next()) {
+                long tempSummonerId = result.getLong("SummonerId");
+
+                // If true, we are looking at us. If not, our opponent.
+                if (tempSummonerId == summonerId) {
+                    headToHead.csTenMe = (int) (result.getDouble("ZeroToTen")*10);
+                    headToHead.csTwentyMe = (int) (result.getDouble("TenToTwenty")*10);
+                    headToHead.csTotalMe = result.getInt("MinionsKilled");
+                    headToHead.killsMe = result.getInt("Kills");
+                    headToHead.deathsMe = result.getInt("Deaths");
+                    headToHead.goldFirst10 = result.getInt("gpm10") * 10;
+                    headToHead.goldSecond10 = result.getInt("gpm20") * 10;
+                } else {
+                    headToHead.csTenThem = (int) (result.getDouble("ZeroToTen")*10);
+                    headToHead.csTwentyThem = (int) (result.getDouble("TenToTwenty")*10);
+                    headToHead.csTotalThem = result.getInt("MinionsKilled");
+                    headToHead.killsThem = result.getInt("Kills");
+                    headToHead.deathsThem = result.getInt("Deaths");
+                    headToHead.goldFirst10Them = result.getInt("gpm10") * 10;
+                    headToHead.goldSecond10Them = result.getInt("gpm20") * 10;
+                }
+            }
+        } catch (SQLException ex) {
             System.out.println("An error occurred Getting recent 20 matches for a summoner with specified role: " + role);
             ex.printStackTrace();
         } catch (IllegalStateException ex) {
             System.out.println("An error occurred Getting recent 20 matches for a summoner with specified role: " + role);
             ex.printStackTrace();
         }
-        
+
         return headToHead;
     }
 }

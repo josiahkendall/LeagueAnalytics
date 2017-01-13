@@ -27,6 +27,7 @@ public class MatchControl {
     public MatchControl(DBHelper dbHelper, ParticipantControl participantControl) {
         this.participantControl = participantControl;
     }
+
     
     /**
      * Save a match.

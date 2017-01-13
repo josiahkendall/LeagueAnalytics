@@ -5,6 +5,7 @@
  */
 package com.teamunemployment.lolanalyticsv3.RestApi;
 
+import com.google.api.client.http.HttpResponse;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -12,27 +13,15 @@ import com.google.api.server.spi.config.Named;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
-import com.teamunemployment.lolanalytics.data.control.CreepsPerMinDeltaControl;
-import com.teamunemployment.lolanalytics.data.control.CsDiffPerMinDeltasControl;
-import com.teamunemployment.lolanalytics.data.control.GoldPerMinDeltasControl;
-import com.teamunemployment.lolanalytics.data.control.MasteriesControl;
-import com.teamunemployment.lolanalytics.data.control.MatchDetailsControl;
-import com.teamunemployment.lolanalytics.data.control.MatchParticipantSummaryJunctionControl;
-import com.teamunemployment.lolanalytics.data.control.MatchSummaryControl;
-import com.teamunemployment.lolanalytics.data.control.ParticipantControl;
-import com.teamunemployment.lolanalytics.data.control.ParticipantIdentityControl;
-import com.teamunemployment.lolanalytics.data.control.RuneControl;
-import com.teamunemployment.lolanalytics.data.control.StatControl;
-import com.teamunemployment.lolanalytics.data.control.TimelineControl;
-import com.teamunemployment.lolanalytics.data.control.XpPerMinDeltaControl;
+import com.teamunemployment.lolanalytics.data.Role;
+import com.teamunemployment.lolanalytics.data.SummonerTableAccessor;
+import com.teamunemployment.lolanalytics.data.TestStats.TestStats;
+import com.teamunemployment.lolanalytics.data.control.*;
+import com.teamunemployment.lolanalytics.data.control.Summoner.SummonerInfoControl;
 import com.teamunemployment.lolanalytics.data.database.DBHelper;
 import com.teamunemployment.lolanalytics.data.statics;
-import com.teamunemployment.lolanalytics.models.GeneralStats;
-import com.teamunemployment.lolanalytics.models.MatchDetailsModel;
-import com.teamunemployment.lolanalytics.models.MatchList;
-import com.teamunemployment.lolanalytics.models.MatchSummary;
-import com.teamunemployment.lolanalytics.models.StringResponse;
-import com.teamunemployment.lolanalytics.models.SummonerModel;
+import com.teamunemployment.lolanalytics.models.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.*;
@@ -40,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.teamunemployment.lolanalytics.models.Beans.*;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.appengine.UrlFetchClient;
@@ -64,58 +54,6 @@ import javax.servlet.ServletException;
 
 public class EntryApi {
 
-    /** A simple endpoint method that takes a name and says Hi back */
-    @ApiMethod(name = "sayHi",httpMethod = ApiMethod.HttpMethod.GET,path = "test/{hi}" )
-    public StringResponse sayHi(@Named("hi") String hi) throws ServletException, ClassNotFoundException {
-        final String createTableSql = "CREATE TABLE IF NOT EXISTS visits ( visit_id INT NOT NULL "
-                + "AUTO_INCREMENT, user_ip VARCHAR(46) NOT NULL, timestamp DATETIME NOT NULL, "
-                + "PRIMARY KEY (visit_id) )";
-        final String createVisitSql = "INSERT INTO visits (user_ip, timestamp) VALUES (?, ?)";
-        final String selectSql = "SELECT user_ip, timestamp FROM visits ORDER BY timestamp DESC "
-                + "LIMIT 10";
-
-        String  url = System.getProperty("ae-cloudsql.cloudsql-database-url");
-        if (SystemProperty.environment.value() ==
-                SystemProperty.Environment.Value.Production) {
-            // Load the class that provides the new "jdbc:google:mysql://" prefix.
-            Class.forName("com.mysql.jdbc.GoogleDriver");
-           // url = "jdbc:google:mysql://your-project-id:your-instance-name/guestbook?user=root";
-        } else {
-            // Local MySQL instance to use during development.
-            Class.forName("com.mysql.jdbc.Driver");
-            url = System.getProperty("ae-cloudsql.local-database-url");
-            //url = "jdbc:mysql://127.0.0.1:3306/guestbook?user=root";
-        }
-
-        // TODO REMOVE THIS WHHEN WE DEPLOY TO APP ENGINE. Really need a solution.
-        String host = "jdbc:mysql://localhost:3306/local_lolanlaytics";
-        String user = "root";
-        String password =  "Idnw2bh2";
-
-       //try (Connection conn = DriverManager.getConnection(url);
-       try (Connection conn = DriverManager.getConnection(host, user, password);
-            PreparedStatement statementCreateVisit = conn.prepareStatement(createVisitSql)) {
-            conn.createStatement().executeUpdate(createTableSql);
-            String userIp = "123.456.78.9";
-            statementCreateVisit.setString(1, userIp);
-            statementCreateVisit.setTimestamp(2, new Timestamp(new Date().getTime()));
-            statementCreateVisit.executeUpdate();
-            String testResult = "";
-            try (ResultSet rs = conn.prepareStatement(selectSql).executeQuery()) {
-                while (rs.next()) {
-                    String savedIp = rs.getString("user_ip");
-                    String timeStamp = rs.getString("timestamp");
-                    testResult += "Time: " + timeStamp + " Addr: " + savedIp + "\n";
-                }
-                StringResponse firstResponse = new StringResponse();
-                firstResponse.setData(testResult);
-                return firstResponse;
-            }
-
-        } catch (SQLException e) {
-            throw new ServletException("SQL error", e);
-        }
-    }
     private DBHelper dbHelper;
     private TimelineControl timelineControl;
     private ParticipantControl participantSummary;
@@ -126,12 +64,12 @@ public class EntryApi {
     private ParticipantIdentityControl participantIdentityControl;
     private MatchDetailsControl matchDetailsControl;
     private MatchSummaryControl matchSummaryControl;
+    private SummonerInfoControl summonerInfoControl;
     private MatchParticipantSummaryJunctionControl matchParticipantSummaryJunctionControl;
+    private SummonerTableAccessor summonerTableAccessor;
     
     private void init() {
-        if (dbHelper == null) {
-            dbHelper = new DBHelper("jdbc:mysql://localhost:3306/local_lolanlaytics", "root", "Idnw2bh2");
-        }
+        dbHelper = new DBHelper();
         // Create the connection to our database.
         dbHelper.Connect();
         RuneControl runeControl = new RuneControl();
@@ -142,11 +80,36 @@ public class EntryApi {
         StatControl statControl = new StatControl(dbHelper);
         MasteriesControl masteriesControl = new MasteriesControl();
         TimelineControl timelineControl = new TimelineControl(cpmControl, csdControl, gpmControl, xpPerMinDeltaControl, dbHelper);
-
+        summonerTableAccessor = new SummonerTableAccessor(dbHelper);
+        summonerInfoControl = new SummonerInfoControl();
         participantControl = new ParticipantControl(dbHelper, runeControl, timelineControl, statControl, masteriesControl);
         participantIdentityControl = new ParticipantIdentityControl(dbHelper);
+        matchParticipantSummaryJunctionControl = new MatchParticipantSummaryJunctionControl(dbHelper);
         matchDetailsControl = new MatchDetailsControl(participantControl, participantIdentityControl, dbHelper, matchParticipantSummaryJunctionControl);
         matchSummaryControl = new MatchSummaryControl(dbHelper);
+    }
+
+    @ApiMethod(name = "RefreshUserData", httpMethod = ApiMethod.HttpMethod.GET, path = "Refresh/{SummonerId}")
+    public StringResponse RefreshUserData(@Named("SummonerId") long summonerId) {
+        init();
+
+        RestAdapter.Builder builder = new RestAdapter.Builder()
+                .setEndpoint("https://oce.api.pvp.net/api/lol/oce/v2.2")
+                .setConverter(new GsonConverter(new GsonBuilder().create()))
+                .setClient(new UrlFetchClient());
+
+        RestAdapter serviceAdapter = builder.build();
+
+        RiotMatchControl riotMatchControl = new RiotMatchControl(participantControl, participantIdentityControl, dbHelper,
+                matchParticipantSummaryJunctionControl, serviceAdapter, matchSummaryControl, matchDetailsControl);
+        try {
+            riotMatchControl.UpdateMatchesForASummoner(summonerId);
+        } catch (InterruptedException ex) {
+            // TODO fix this.
+        }
+
+        // TODO and this
+        return new StringResponse();
     }
     
     /**
@@ -161,13 +124,14 @@ public class EntryApi {
         // Not really sure if i should init this evertime.
         init();
         
-        StatisticsAPI.StatisticsApi statisticsApi = new StatisticsAPI.StatisticsApi(matchDetailsControl, matchSummaryControl);
+        StatisticsAPI.StatisticsApi statisticsApi = new StatisticsAPI.StatisticsApi(matchDetailsControl, matchSummaryControl, summonerInfoControl, summonerTableAccessor);
         GeneralStats generalStats = statisticsApi.FetchAndCalculateStatsForAUserAndRole(summonerName, role);
         
         dbHelper.Disconnect();
         
         return generalStats;
     }
+
     /**
      * Fetch summoner info based on the name of the summoner that we are looking for.
      * @param summonerName The summoner for whom we are looking for data.
@@ -175,19 +139,10 @@ public class EntryApi {
      * @throws IOException 
      */
     @ApiMethod(name = "SummonerInfo",httpMethod = ApiMethod.HttpMethod.GET,path = "SummonerInfo/{summonerName}" )
-    public SummonerModel FetchSummonerInfoByName(@Named("summonerName") String summonerName) throws IOException {
-        
-        RestAdapter.Builder builder = new RestAdapter.Builder()
-                .setEndpoint("https://oce.api.pvp.net/api/lol/oce/v1.4")
-                .setConverter(new GsonConverter(new GsonBuilder().create()))
-                .setClient(new UrlFetchClient());
-      
-        RestAdapter serviceAdapter = builder.build();
-       
-        SummonerService service = serviceAdapter.create(SummonerService.class);
-        SummonerModel summonerModel = service.getSummonerByName(summonerName);
-        System.out.println(summonerModel.kloin.id);
-        return summonerModel;
+    public SummonerInfo FetchSummonerInfoByName(@Named("summonerName") String summonerName) throws IOException {
+        summonerInfoControl = new SummonerInfoControl();
+        SummonerInfo info = summonerInfoControl.FetchSummonerInfo(summonerName);
+        return info;
     }
     
     @ApiMethod(name = "FetchMatchList", httpMethod = ApiMethod.HttpMethod.GET, path = "FetchMatchList/{summonerId}")
@@ -219,11 +174,16 @@ public class EntryApi {
         return match;
     } 
     
-    @ApiMethod(name = "FetchTopStats", httpMethod=ApiMethod.HttpMethod.GET, path = "FetchTopStats/{userId}")
-    public StringResponse FetchTopStats(@Named("userId") long userId) {
+    @ApiMethod(name = "FetchTopStats", httpMethod=ApiMethod.HttpMethod.GET, path = "FetchTopStats/{summonerId}")
+    public List<AdapterPojo> FetchTopStats(@Named("summonerId") long userId) {
+        if (userId == -1) {
+            TestStats testStats = new TestStats();
+            return testStats.FetchTopStats();
+        }
+
         init();
-        StatisticsAPI.StatisticsApi statisticsApi = new StatisticsAPI.StatisticsApi(matchDetailsControl, matchSummaryControl);
-        GeneralStats stats = statisticsApi.FetchAndCalculateStatsForAUserAndRole(userId, "TOP");
+        StatisticsAPI.StatisticsApi statisticsApi = new StatisticsAPI.StatisticsApi(matchDetailsControl, matchSummaryControl, summonerInfoControl, summonerTableAccessor);
+        GeneralStats stats = statisticsApi.FetchAndCalculateStatsForAUserAndLane(userId, "TOP");
         
         Result creepsFirst10 = new Result("Creep Score First Ten Minutes", stats.averageCsEarlyGameEnemy, stats.averageCsEarlyGame);
         Result killsFirst10 = new Result("Kills First Ten Minutes", stats.averageKillsEnemy, stats.averageKills);
@@ -234,10 +194,76 @@ public class EntryApi {
                 + deathsFirst10.toString() + "]";
         StringResponse stringResponse = new StringResponse();
         stringResponse.setData(result);
-        return stringResponse;
-    } 
-   
-    
-    
-    
+        return null;
+    }
+
+    @ApiMethod(name = "FetchMidStats", httpMethod=ApiMethod.HttpMethod.GET, path = "FetchMidStats/{userId}")
+    public List<AdapterPojo> FetchMidStats(@Named("userId") long userId) {
+        if (userId == -1) {
+            TestStats testStats = new TestStats();
+            return testStats.FetchMidStats();
+        }
+        
+        init();
+        StatisticsAPI.StatisticsApi statisticsApi = new StatisticsAPI.StatisticsApi(matchDetailsControl, matchSummaryControl, summonerInfoControl, summonerTableAccessor);
+        GeneralStats stats = statisticsApi.FetchAndCalculateStatsForAUserAndLane(userId, "MIDDLE");
+
+        Result creepsFirst10 = new Result("Creep Score First Ten Minutes", stats.averageCsEarlyGameEnemy, stats.averageCsEarlyGame);
+        Result killsFirst10 = new Result("Kills First Ten Minutes", stats.averageKillsEnemy, stats.averageKills);
+        Result deathsFirst10 = new Result("Deaths First Ten Minutes", stats.averageDeathsEnemy, stats.averageDeaths);
+        String result = "["
+                + creepsFirst10.toString() + ","
+                + killsFirst10.toString() + ","
+                + deathsFirst10.toString() + "]";
+        StringResponse stringResponse = new StringResponse();
+        stringResponse.setData(result);
+        return null;
+    }
+
+    @ApiMethod(name = "FetchAdcStats", httpMethod=ApiMethod.HttpMethod.GET, path = "FetchAdcStats/{userId}")
+    public List<AdapterPojo> FetchADCStats(@Named("userId") long userId) {
+        if (userId == -1) {
+            TestStats testStats = new TestStats();
+            return testStats.FetchAdcStats();
+        }
+        init();
+        StatisticsAPI.StatisticsApi statisticsApi = new StatisticsAPI.StatisticsApi(matchDetailsControl, matchSummaryControl, summonerInfoControl, summonerTableAccessor);
+        GeneralStats stats = statisticsApi.FetchAndCalculateStatsForAUserAndLaneAndRole(userId, "BOTTOM", "DUO_CARRY");
+
+        Result creepsFirst10 = new Result("Creep Score First Ten Minutes", stats.averageCsEarlyGameEnemy, stats.averageCsEarlyGame);
+        Result killsFirst10 = new Result("Kills First Ten Minutes", stats.averageKillsEnemy, stats.averageKills);
+        Result deathsFirst10 = new Result("Deaths First Ten Minutes", stats.averageDeathsEnemy, stats.averageDeaths);
+        String result = "["
+                + creepsFirst10.toString() + ","
+                + killsFirst10.toString() + ","
+                + deathsFirst10.toString() + "]";
+        StringResponse stringResponse = new StringResponse();
+        stringResponse.setData(result);
+        return null;
+    }
+
+    @ApiMethod(name = "FetchJungleStats", httpMethod=ApiMethod.HttpMethod.GET, path = "FetchJungleStats/{UserId}")
+    public List<AdapterPojo> FetchJungleStats(@Named("UserId") long userId) {
+        if (userId == -1) {
+            TestStats testStats = new TestStats();
+            return testStats.FetchJungleStats();
+        }
+        return null;
+    }
+
+    @ApiMethod(name = "FetchSupportStats", httpMethod=ApiMethod.HttpMethod.GET, path = "FetchSupportStats/{UserId}")
+    public List<AdapterPojo> FetchSupportStats(@Named("UserId") long userId) {
+        if (userId == -1) {
+            TestStats testStats = new TestStats();
+            return testStats.FetchSupportStats();
+        }
+        return null;
+    }
+
+    @ApiMethod(name = "FetchWinRateForSummonnerInRole", httpMethod = ApiMethod.HttpMethod.GET, path = "FetchWinRate/{UserId}/{Role}")
+    public com.teamunemployment.lolanalytics.models.Beans.Double FetchWinRateForSummonerInRole(@Named("UserId") long userId, @Named("Role") String role) {
+        TestStats testStats = new TestStats();
+        return testStats.FetchWinRate(role);
+    }
+
 }

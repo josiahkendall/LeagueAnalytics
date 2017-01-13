@@ -21,11 +21,13 @@ import org.json.JSONObject;
  * @author jek40
  */
 public class SummonerInfoControl {
- 
+
+
+
     /**
      * Fetch the summoner id for a user.
      * @param summonerName The entered summoner name
-     * @return The summoner id for the summoner name that we gave.
+     * @return The summoner object for the summoner name that we gave.
      */
     public SummonerInfo FetchSummonerInfo(String summonerName) throws IOException {
         // Todo Remove api key from strings
@@ -43,9 +45,14 @@ public class SummonerInfoControl {
 
         Gson gson = new Gson();
         // The object is listed under an object with the summoner name, so we need to fetch that object first;
-        JSONObject jsonObject = new JSONObject(json);
+        JSONObject jsonObject = new JSONObject(json.toString());
         JSONObject objectOfInterest = jsonObject.getJSONObject(summonerName);
         SummonerInfo summonerInfo = gson.fromJson(objectOfInterest.toString(), SummonerInfo.class);
         return summonerInfo;
+    }
+
+    public boolean DoesSummonerExistLocally() {
+
+        return false;
     }
 }

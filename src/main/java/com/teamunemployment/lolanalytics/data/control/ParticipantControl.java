@@ -63,23 +63,19 @@ public class ParticipantControl {
                             + "ChampionId,"
                             + "HighestAchievedSeasonTier,"
                             + "TimelineId,"
-                            + "MasteriesIdsCSV,"
                             + "StatId,"
                             + "ParticipantId,"
-                            + "RuneIdsCSV,"
                             + "SummonerId,"
                             + "Season)"
-                            + " values (%d, %d, %d, %s, '%s', '%s', '%s', %d, %d, '%s', %d, '%s')",
+                            + " values (%d, %d, %d, %d, '%s', '%s', %d, %d, %d, '%s')",
                     participantSummary.getTeamId(),
                     participantSummary.getSpell1Id(),
                     participantSummary.getSpell2Id(),
                     participantSummary.getChampionId(),
                     participantSummary.getHighestAchievedSeasonTier(),
                     timelineId,
-                    "123",
                     statsId,
                     participantSummary.getParticipantId(),
-                    runesCsv,
                     summonerId,
                     season
             );
