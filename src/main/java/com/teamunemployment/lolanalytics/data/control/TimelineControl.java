@@ -8,12 +8,8 @@ package com.teamunemployment.lolanalytics.data.control;
 import com.teamunemployment.lolanalytics.data.SummonerTableAccessor;
 import com.teamunemployment.lolanalytics.data.database.DBHelper;
 import com.teamunemployment.lolanalytics.models.ParticipantSummary;
-import com.teamunemployment.lolanalytics.models.stats.CreepsPerMinDeltas;
-import com.teamunemployment.lolanalytics.models.stats.CsDiffPerMinDeltas;
-import com.teamunemployment.lolanalytics.models.stats.GoldPerMinDeltas;
-import com.teamunemployment.lolanalytics.models.stats.Stats;
-import com.teamunemployment.lolanalytics.models.stats.Timeline;
-import com.teamunemployment.lolanalytics.models.stats.XpPerMinDeltas;
+import com.teamunemployment.lolanalytics.models.stats.*;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -25,29 +21,22 @@ import java.util.logging.Logger;
  */
 public class TimelineControl {
     
-    private CreepsPerMinDeltaControl creepsPerMinDeltaControl;
-    private CsDiffPerMinDeltasControl csDiffPerMinDeltasControl;
-    private GoldPerMinDeltasControl goldPerMinDeltasControl;
-    private XpPerMinDeltaControl xpPerMinDeltaControl;
+    private DeltaControl deltaControl;
     private DBHelper dbHelper;
     
-    public TimelineControl (CreepsPerMinDeltaControl cmpControl, CsDiffPerMinDeltasControl csdContorl,
-            GoldPerMinDeltasControl gpmControl, XpPerMinDeltaControl xpPerMinDeltaControl, DBHelper dbHelper) {
-        this.creepsPerMinDeltaControl = cmpControl;
-        this.csDiffPerMinDeltasControl = csdContorl;
-        this.goldPerMinDeltasControl = gpmControl;
-        this.xpPerMinDeltaControl = xpPerMinDeltaControl;
+    public TimelineControl(DBHelper dbHelper, DeltaControl deltaControl) {
+        this.deltaControl = deltaControl;
         this.dbHelper = dbHelper;
     }
     
     public int SaveTimeline(Timeline timeline) {
-        int cpmdId = creepsPerMinDeltaControl.saveCPMD(timeline.getCreepsPerMinDeltas());
-        int csdiffId = csDiffPerMinDeltasControl.saveCDPMD(timeline.getCsDiffPerMinDeltas());
-        int gpmdId = goldPerMinDeltasControl.saveGPMD(timeline.getGoldPerMinDeltas());
-        int xpmId = xpPerMinDeltaControl.saveXpPMD(timeline.getXpPerMinDeltas());
-        int damageTakenPerMinDeltaId = 0;
-        int damageTakenDiffPerMinDeltaId = 0;
-        
+        int cpmdId = deltaControl.SaveCreepsPerMinDeltas(timeline.getCreepsPerMinDeltas());
+        int csdiffId = deltaControl.SaveCsDiffPerMinDeltas(timeline.getCsDiffPerMinDeltas());
+        int gpmdId = deltaControl.SaveGoldPerMinDeltas(timeline.getGoldPerMinDeltas());
+        int xpmId = deltaControl.SaveXpPerMinDeltas(timeline.getXpPerMinDeltas());
+        int xpDiffId = deltaControl.SaveXpDiffPerMinDeltas(timeline.getXpDiffPerMinDeltas());
+        int damageTakenPerMinDeltaId = deltaControl.SaveDamageTakenPerMinDeltas(timeline.getDamageTakenPerMinDeltas());
+        int damageTakenDiffPerMinDeltaId = deltaControl.SaveDamageTakenDiffPerMinDeltas(timeline.getDamageTakenDiffPerMinDeltas());
         try {
             String queryString = String.format(
                     "Insert into timeline ("
@@ -64,7 +53,7 @@ public class TimelineControl {
                     xpmId,
                     gpmdId,
                     csdiffId,
-                    0,
+                    xpDiffId,
                     damageTakenPerMinDeltaId,
                     damageTakenDiffPerMinDeltaId,
                     timeline.getRole(),
@@ -94,24 +83,33 @@ public class TimelineControl {
                 
                 // Set creeps per min deltas
                 int cpmdId = resultSet.getInt("CreepsPerMinDeltaId");
-                CreepsPerMinDeltas creepsPerMinDeltas = creepsPerMinDeltaControl.getCPMD(cpmdId);
+                BaseDeltas creepsPerMinDeltas = deltaControl.GetCreepsPerMinDeltas(cpmdId);
                 timeline.setCreepsPerMinDeltas(creepsPerMinDeltas);
-                
+
                 int csDiffPerMinId = resultSet.getInt("CsDiffPerMinDeltaId");
-                CsDiffPerMinDeltas csDiffPerMinDeltas = csDiffPerMinDeltasControl.getGPMD(csDiffPerMinId);
+                BaseDeltas csDiffPerMinDeltas = deltaControl.GetCsDiffPerMinDeltas(csDiffPerMinId);
                 timeline.setCsDiffPerMinDeltas(csDiffPerMinDeltas);
-                
+
                 int xpPerMindDeltasId = resultSet.getInt("XPPerMinDeltaId");
-                XpPerMinDeltas xpPerMinDeltas = xpPerMinDeltaControl.getXpPMD(xpPerMindDeltasId);
+                BaseDeltas xpPerMinDeltas = deltaControl.GetXpPerMinDeltas(xpPerMindDeltasId);
                 timeline.setXpPerMinDeltas(xpPerMinDeltas);
-                
+
                 int goldPerMinDeltasId = resultSet.getInt("GoldPerMinDeltaId");
-                GoldPerMinDeltas goldPerMinDeltas = goldPerMinDeltasControl.getGPMD(goldPerMinDeltasId);
+                BaseDeltas goldPerMinDeltas = deltaControl.GetGoldPerMinDeltas(goldPerMinDeltasId);
                 timeline.setGoldPerMinDeltas(goldPerMinDeltas);
-                
-                timeline.setXpDiffPerMinDeltas(null); // not implemented yet
-                timeline.setDamageTakenDiffPerMinDeltas(null); // not yet implemented
-                timeline.setDamageTakenPerMinDeltas(null); // not yet implemented
+
+                int xpDiffPerMinDeltasId = resultSet.getInt("XpDiffPerMinDeltaId");
+                BaseDeltas xpDiffPerMinDeltas = deltaControl.GetXpDiffPerMinDeltas(xpDiffPerMinDeltasId);
+                timeline.setXpDiffPerMinDeltas(xpDiffPerMinDeltas);
+
+                int damageTakenPerMinDeltasId = resultSet.getInt("DamageTakenPerMinDeltaId");
+                BaseDeltas damageTakenPerMinDeltas= deltaControl.GetDamageTakenPerMinDeltas(damageTakenPerMinDeltasId);
+                timeline.setDamageTakenPerMinDeltas(damageTakenPerMinDeltas);
+
+                int damageTakenDiffPerMinDeltaId = resultSet.getInt("DamageTakenDiffPerMinDeltaId");
+                BaseDeltas damageTakenDiffPerMinDeltas = deltaControl.GetDamageTakenDiffPerMinDeltas(damageTakenDiffPerMinDeltaId);
+                timeline.setDamageTakenDiffPerMinDeltas(damageTakenDiffPerMinDeltas);
+
                 timeline.setRole(resultSet.getString("Role"));
                 timeline.setLane(resultSet.getString("Lane"));
                 return timeline;

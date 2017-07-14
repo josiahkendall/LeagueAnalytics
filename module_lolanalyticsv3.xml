@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_lolanalyticsv3" default="compile.module.lolanalyticsv3">
+  <dirname property="module.lolanalyticsv3.basedir" file="${ant.file.module_lolanalyticsv3}"/>
+  
+  <property name="module.jdk.home.lolanalyticsv3" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.lolanalyticsv3" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.lolanalyticsv3" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.lolanalyticsv3" value="-encoding UTF-8 -source 1.7 -target 1.7 ${compiler.args}"/>
+  
+  <property name="lolanalyticsv3.output.dir" value="${module.lolanalyticsv3.basedir}/target/lolanalyticsv3-1.0-SNAPSHOT/WEB-INF/classes"/>
+  <property name="lolanalyticsv3.testoutput.dir" value="${module.lolanalyticsv3.basedir}/target/test-classes"/>
+  
+  <path id="lolanalyticsv3.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="lolanalyticsv3.module.production.classpath">
+    <path refid="${module.jdk.classpath.lolanalyticsv3}"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:5.1.6.classpath"/>
+    <path refid="library.maven:_com.google.cloud.sql:mysql-socket-factory:1.0.2.classpath"/>
+    <path refid="library.maven:_com.google.cloud.sql:mysql-socket-factory-core:1.0.2.classpath"/>
+    <path refid="library.maven:_com.google.apis:google-api-services-sqladmin:v1beta4-rev25-1.22.0.classpath"/>
+    <path refid="library.maven:_com.google.api-client:google-api-client:1.22.0.classpath"/>
+    <path refid="library.maven:_com.google.oauth-client:google-oauth-client:1.22.0.classpath"/>
+    <path refid="library.maven:_com.google.http-client:google-http-client:1.22.0.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpclient:4.0.1.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpcore:4.0.1.classpath"/>
+    <path refid="library.maven:_commons-codec:commons-codec:1.3.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:1.3.9.classpath"/>
+    <path refid="library.maven:_com.google.http-client:google-http-client-jackson2:1.22.0.classpath"/>
+    <path refid="library.maven:_com.fasterxml.jackson.core:jackson-core:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava-jdk5:17.0.classpath"/>
+    <path refid="library.maven:_com.google.appengine:appengine-api-1.0-sdk:1.9.36.classpath"/>
+    <path refid="library.maven:_com.google.appengine:appengine-endpoints:1.9.36.classpath"/>
+    <path refid="library.maven:_javax.servlet:servlet-api:2.5.classpath"/>
+    <path refid="library.maven:_javax.inject:javax.inject:1.classpath"/>
+    <path refid="library.maven:_com.squareup.retrofit:retrofit:1.9.0.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:2.3.1.classpath"/>
+    <path refid="library.maven:_com.squareup.okio:okio:1.8.0.classpath"/>
+    <path refid="library.maven:_com.squareup.okhttp3:okhttp:3.3.0.classpath"/>
+    <path refid="library.maven:_com.squareup.okhttp:okhttp:2.5.0.classpath"/>
+    <path refid="library.maven:_org.json:json:20140107.classpath"/>
+    <path refid="library.maven:_javax:javaee-web-api:6.0.classpath"/>
+  </path>
+  
+  <path id="lolanalyticsv3.runtime.production.module.classpath">
+    <pathelement location="${lolanalyticsv3.output.dir}"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:5.1.6.classpath"/>
+    <path refid="library.maven:_com.google.cloud.sql:mysql-socket-factory:1.0.2.classpath"/>
+    <path refid="library.maven:_com.google.cloud.sql:mysql-socket-factory-core:1.0.2.classpath"/>
+    <path refid="library.maven:_com.google.apis:google-api-services-sqladmin:v1beta4-rev25-1.22.0.classpath"/>
+    <path refid="library.maven:_com.google.api-client:google-api-client:1.22.0.classpath"/>
+    <path refid="library.maven:_com.google.oauth-client:google-oauth-client:1.22.0.classpath"/>
+    <path refid="library.maven:_com.google.http-client:google-http-client:1.22.0.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpclient:4.0.1.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpcore:4.0.1.classpath"/>
+    <path refid="library.maven:_commons-codec:commons-codec:1.3.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:1.3.9.classpath"/>
+    <path refid="library.maven:_com.google.http-client:google-http-client-jackson2:1.22.0.classpath"/>
+    <path refid="library.maven:_com.fasterxml.jackson.core:jackson-core:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava-jdk5:17.0.classpath"/>
+    <path refid="library.maven:_com.google.appengine:appengine-api-1.0-sdk:1.9.36.classpath"/>
+    <path refid="library.maven:_com.google.appengine:appengine-endpoints:1.9.36.classpath"/>
+    <path refid="library.maven:_javax.inject:javax.inject:1.classpath"/>
+    <path refid="library.maven:_com.squareup.retrofit:retrofit:1.9.0.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:2.3.1.classpath"/>
+    <path refid="library.maven:_com.squareup.okio:okio:1.8.0.classpath"/>
+    <path refid="library.maven:_com.squareup.okhttp3:okhttp:3.3.0.classpath"/>
+    <path refid="library.maven:_com.squareup.okhttp:okhttp:2.5.0.classpath"/>
+    <path refid="library.maven:_org.json:json:20140107.classpath"/>
+  </path>
+  
+  <path id="lolanalyticsv3.module.classpath">
+    <path refid="${module.jdk.classpath.lolanalyticsv3}"/>
+    <pathelement location="${lolanalyticsv3.output.dir}"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:5.1.6.classpath"/>
+    <path refid="library.maven:_com.google.cloud.sql:mysql-socket-factory:1.0.2.classpath"/>
+    <path refid="library.maven:_com.google.cloud.sql:mysql-socket-factory-core:1.0.2.classpath"/>
+    <path refid="library.maven:_com.google.apis:google-api-services-sqladmin:v1beta4-rev25-1.22.0.classpath"/>
+    <path refid="library.maven:_com.google.api-client:google-api-client:1.22.0.classpath"/>
+    <path refid="library.maven:_com.google.oauth-client:google-oauth-client:1.22.0.classpath"/>
+    <path refid="library.maven:_com.google.http-client:google-http-client:1.22.0.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpclient:4.0.1.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpcore:4.0.1.classpath"/>
+    <path refid="library.maven:_commons-codec:commons-codec:1.3.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:1.3.9.classpath"/>
+    <path refid="library.maven:_com.google.http-client:google-http-client-jackson2:1.22.0.classpath"/>
+    <path refid="library.maven:_com.fasterxml.jackson.core:jackson-core:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava-jdk5:17.0.classpath"/>
+    <path refid="library.maven:_com.google.appengine:appengine-api-1.0-sdk:1.9.36.classpath"/>
+    <path refid="library.maven:_com.google.appengine:appengine-endpoints:1.9.36.classpath"/>
+    <path refid="library.maven:_javax.servlet:servlet-api:2.5.classpath"/>
+    <path refid="library.maven:_javax.inject:javax.inject:1.classpath"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_org.mockito:mockito-all:1.9.5.classpath"/>
+    <path refid="library.maven:_com.google.appengine:appengine-testing:1.9.36.classpath"/>
+    <path refid="library.maven:_com.google.appengine:appengine-api-stubs:1.9.36.classpath"/>
+    <path refid="library.maven:_com.squareup.retrofit:retrofit:1.9.0.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:2.3.1.classpath"/>
+    <path refid="library.maven:_com.squareup.okio:okio:1.8.0.classpath"/>
+    <path refid="library.maven:_com.squareup.okhttp3:okhttp:3.3.0.classpath"/>
+    <path refid="library.maven:_com.squareup.okhttp:okhttp:2.5.0.classpath"/>
+    <path refid="library.maven:_org.json:json:20140107.classpath"/>
+    <path refid="library.maven:_javax:javaee-web-api:6.0.classpath"/>
+  </path>
+  
+  <path id="lolanalyticsv3.runtime.module.classpath">
+    <pathelement location="${lolanalyticsv3.testoutput.dir}"/>
+    <pathelement location="${lolanalyticsv3.output.dir}"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:5.1.6.classpath"/>
+    <path refid="library.maven:_com.google.cloud.sql:mysql-socket-factory:1.0.2.classpath"/>
+    <path refid="library.maven:_com.google.cloud.sql:mysql-socket-factory-core:1.0.2.classpath"/>
+    <path refid="library.maven:_com.google.apis:google-api-services-sqladmin:v1beta4-rev25-1.22.0.classpath"/>
+    <path refid="library.maven:_com.google.api-client:google-api-client:1.22.0.classpath"/>
+    <path refid="library.maven:_com.google.oauth-client:google-oauth-client:1.22.0.classpath"/>
+    <path refid="library.maven:_com.google.http-client:google-http-client:1.22.0.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpclient:4.0.1.classpath"/>
+    <path refid="library.maven:_org.apache.httpcomponents:httpcore:4.0.1.classpath"/>
+    <path refid="library.maven:_commons-codec:commons-codec:1.3.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:1.3.9.classpath"/>
+    <path refid="library.maven:_com.google.http-client:google-http-client-jackson2:1.22.0.classpath"/>
+    <path refid="library.maven:_com.fasterxml.jackson.core:jackson-core:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava-jdk5:17.0.classpath"/>
+    <path refid="library.maven:_com.google.appengine:appengine-api-1.0-sdk:1.9.36.classpath"/>
+    <path refid="library.maven:_com.google.appengine:appengine-endpoints:1.9.36.classpath"/>
+    <path refid="library.maven:_javax.servlet:servlet-api:2.5.classpath"/>
+    <path refid="library.maven:_javax.inject:javax.inject:1.classpath"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_org.mockito:mockito-all:1.9.5.classpath"/>
+    <path refid="library.maven:_com.google.appengine:appengine-testing:1.9.36.classpath"/>
+    <path refid="library.maven:_com.google.appengine:appengine-api-stubs:1.9.36.classpath"/>
+    <path refid="library.maven:_com.squareup.retrofit:retrofit:1.9.0.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:2.3.1.classpath"/>
+    <path refid="library.maven:_com.squareup.okio:okio:1.8.0.classpath"/>
+    <path refid="library.maven:_com.squareup.okhttp3:okhttp:3.3.0.classpath"/>
+    <path refid="library.maven:_com.squareup.okhttp:okhttp:2.5.0.classpath"/>
+    <path refid="library.maven:_org.json:json:20140107.classpath"/>
+    <path refid="library.maven:_javax:javaee-web-api:6.0.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.lolanalyticsv3">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.lolanalyticsv3">
+    <patternset refid="excluded.from.module.lolanalyticsv3"/>
+  </patternset>
+  
+  <path id="lolanalyticsv3.module.sourcepath">
+    <dirset dir="${module.lolanalyticsv3.basedir}">
+      <include name="src/main/java"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="lolanalyticsv3.module.test.sourcepath">
+    <dirset dir="${module.lolanalyticsv3.basedir}">
+      <include name="src/test/java"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.lolanalyticsv3" depends="compile.module.lolanalyticsv3.production,compile.module.lolanalyticsv3.tests" description="Compile module lolanalyticsv3"/>
+  
+  <target name="compile.module.lolanalyticsv3.production" depends="register.custom.compilers" description="Compile module lolanalyticsv3; production classes">
+    <mkdir dir="${lolanalyticsv3.output.dir}"/>
+    <javac2 destdir="${lolanalyticsv3.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.lolanalyticsv3}/javac">
+      <compilerarg line="${compiler.args.lolanalyticsv3}"/>
+      <bootclasspath refid="lolanalyticsv3.module.bootclasspath"/>
+      <classpath refid="lolanalyticsv3.module.production.classpath"/>
+      <src refid="lolanalyticsv3.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.lolanalyticsv3"/>
+    </javac2>
+    
+    <copy todir="${lolanalyticsv3.output.dir}">
+      <fileset dir="${module.lolanalyticsv3.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.lolanalyticsv3.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.lolanalyticsv3.tests" depends="register.custom.compilers,compile.module.lolanalyticsv3.production" description="compile module lolanalyticsv3; test classes" unless="skip.tests">
+    <mkdir dir="${lolanalyticsv3.testoutput.dir}"/>
+    <javac2 destdir="${lolanalyticsv3.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.lolanalyticsv3}/javac">
+      <compilerarg line="${compiler.args.lolanalyticsv3}"/>
+      <bootclasspath refid="lolanalyticsv3.module.bootclasspath"/>
+      <classpath refid="lolanalyticsv3.module.classpath"/>
+      <src refid="lolanalyticsv3.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.lolanalyticsv3"/>
+    </javac2>
+    
+    <copy todir="${lolanalyticsv3.testoutput.dir}">
+      <fileset dir="${module.lolanalyticsv3.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.lolanalyticsv3" description="cleanup module">
+    <delete dir="${lolanalyticsv3.output.dir}"/>
+    <delete dir="${lolanalyticsv3.testoutput.dir}"/>
+  </target>
+</project>

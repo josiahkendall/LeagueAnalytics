@@ -6,7 +6,6 @@
 package com.teamunemployment.lolanalytics.data.database;
 
 import com.google.appengine.api.utils.SystemProperty;
-import com.google.cloud.sql.jdbc.Driver;
 import com.teamunemployment.lolanalytics.data.statics;
 
 import java.sql.Connection;
@@ -16,8 +15,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static com.sun.activation.registries.LogSupport.log;
 
 /**
  *
@@ -63,10 +60,10 @@ public class DBHelper {
                     currentlyConnected = connection.isValid(1000);
                     return currentlyConnected;
                 } catch (SQLException sqlException) {
-                    log("An error occured whist getting a connection to the database.\n"
+                    System.out.println("An error occured whist getting a connection to the database.\n"
                             + "host: "+ host + "\n"
                             + "username: " + username );
-                    log(sqlException.getMessage());
+                    System.out.println(sqlException.getMessage());
                     return false;
                 }
             } else {
@@ -78,10 +75,10 @@ public class DBHelper {
                     currentlyConnected = connection.isValid(1000);
                     return currentlyConnected;
                 } catch (SQLException sqlException) {
-                    log("An error occured whist getting a connection to the database.\n"
+                    System.out.println("An error occured whist getting a connection to the database.\n"
                             + "host: " + host + "\n"
                             + "username: " + username);
-                    log(sqlException.getMessage());
+                    System.out.println(sqlException.getMessage());
                     return false;
                 }
             }
@@ -134,7 +131,7 @@ public class DBHelper {
         }
         
         Statement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        int resultSet = statement.executeUpdate(query);
+        int resultSet = statement.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
         ResultSet generatedKeys = statement.getGeneratedKeys();
         if (generatedKeys.next()) {
             resultSet = (int) generatedKeys.getLong(1);

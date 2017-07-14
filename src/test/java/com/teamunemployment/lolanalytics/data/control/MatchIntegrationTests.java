@@ -8,20 +8,13 @@ package com.teamunemployment.lolanalytics.data.control;
 import com.teamunemployment.lolanalytics.data.database.DBHelper;
 import com.teamunemployment.lolanalytics.models.MatchDetailsModel;
 import com.teamunemployment.lolanalytics.models.MatchSummary;
-import com.teamunemployment.lolanalytics.models.ParticipantIdentitySummary;
-import com.teamunemployment.lolanalytics.models.ParticipantSummary;
-import com.teamunemployment.lolanalytics.models.SummonerInfo;
-import com.teamunemployment.lolanalytics.models.stats.Timeline;
 import com.teamunemployment.lolanalyticsv3.RestApi.EntryApi;
-import crawler.crawler;
-import java.util.ArrayList;
+
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import junit.framework.Assert;
 import org.junit.Test;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 
 /**
@@ -37,17 +30,15 @@ public class MatchIntegrationTests {
     
     
     private void init() {
-        dbHelper = new DBHelper("jdbc:mysql://localhost:3306/local_lolanlaytics", "root", "Idnw2bh2");
+        dbHelper = new DBHelper("jdbc:mysql://localhost:3306/lolanalytics", "root", "Idnw2bh2");
         boolean connected = dbHelper.Connect();
         System.out.println("Successfully connected: " + connected);
         RuneControl runeControl = new RuneControl();
-        CreepsPerMinDeltaControl cpmControl = new CreepsPerMinDeltaControl(dbHelper);
-        CsDiffPerMinDeltasControl csdControl = new CsDiffPerMinDeltasControl(dbHelper);
-        GoldPerMinDeltasControl gpmControl = new GoldPerMinDeltasControl(dbHelper);
-        XpPerMinDeltaControl xpPerMinDeltaControl = new XpPerMinDeltaControl(dbHelper);
+        BaseDeltaControl baseDeltaControl = new BaseDeltaControl(dbHelper);
+        DeltaControl deltaControl =new DeltaControl(baseDeltaControl);
         StatControl statControl = new StatControl(dbHelper);
         MasteriesControl masteriesControl = new MasteriesControl();
-        TimelineControl timelineControl = new TimelineControl(cpmControl, csdControl, gpmControl, xpPerMinDeltaControl, dbHelper);
+        TimelineControl timelineControl = new TimelineControl(dbHelper,deltaControl );
 
         participantControl = new ParticipantControl(dbHelper, runeControl, timelineControl, statControl, masteriesControl);
         participantIdentityControl = new ParticipantIdentityControl(dbHelper);
@@ -56,41 +47,41 @@ public class MatchIntegrationTests {
     
     @Test
     public void TestThatWeCanLoadAllMatchesForAUser() {
-//        System.out.println("start");
-//        EntryApi api = new EntryApi();
-//        List<MatchSummary> matchSummaries = api.FetchMatchList(276353);
-//        init();
-//        MatchSummaryControl matchSummaryControl = new MatchSummaryControl(dbHelper);
-//        Iterator<MatchSummary> matchSummariesIterator = matchSummaries.iterator();
-//        System.out.println("starting loop");
-//        try {
-//            System.out.println("Sleeping");
-//            Thread.sleep(7000);
-//        } catch (InterruptedException ex) {
-//            System.out.println("Error sleeping: " + ex.getMessage());
-//        }
-//        while (matchSummariesIterator.hasNext()) {
-//            MatchSummary next = matchSummariesIterator.next();
-//            System.out.println("loop running");
-//            matchSummaryControl.saveMatchSummary(next, 276353);
-//            try {
-//                MatchDetailsModel match = api.FetchMatchDetails(next.matchId);
-//                
-//                MatchDetailsControl matchControl = new MatchDetailsControl(participantControl, participantIdentityControl, dbHelper, matchParticipantSummaryJunctionControl);
-//                matchControl.SaveMatch(match, 1542360);
-//                try {
-//                    System.out.println("Sleeping");
-//                    Thread.sleep(7000);
-//                } catch (InterruptedException ex) {
-//                    System.out.println("Error sleeping: " + ex.getMessage());
-//                }
-//                // load match
-//                
-//            } catch(RetrofitError ex) {
-//                System.out.println(ex.getMessage());
-//            }
-//            
-//        }
+        System.out.println("start");
+        EntryApi api = new EntryApi();
+        List<MatchSummary> matchSummaries = api.FetchMatchList(276353);
+        init();
+        MatchSummaryControl matchSummaryControl = new MatchSummaryControl(dbHelper);
+        Iterator<MatchSummary> matchSummariesIterator = matchSummaries.iterator();
+        System.out.println("starting loop");
+        try {
+            System.out.println("Sleeping");
+            Thread.sleep(7000);
+        } catch (InterruptedException ex) {
+            System.out.println("Error sleeping: " + ex.getMessage());
+        }
+        while (matchSummariesIterator.hasNext()) {
+            MatchSummary next = matchSummariesIterator.next();
+            System.out.println("loop running");
+            matchSummaryControl.saveMatchSummary(next, 276353);
+            try {
+                MatchDetailsModel match = api.FetchMatchDetails(next.matchId);
+
+                MatchDetailsControl matchControl = new MatchDetailsControl(participantControl, participantIdentityControl, dbHelper, matchParticipantSummaryJunctionControl);
+                matchControl.SaveMatch(match, 1542360);
+                try {
+                    System.out.println("Sleeping");
+                    Thread.sleep(7000);
+                } catch (InterruptedException ex) {
+                    System.out.println("Error sleeping: " + ex.getMessage());
+                }
+                // load match
+
+            } catch(RetrofitError ex) {
+                System.out.println(ex.getMessage());
+            }
+
+        }
     }
     
     @Test
@@ -110,7 +101,7 @@ public class MatchIntegrationTests {
         MatchDetailsControl matchControl = new MatchDetailsControl(participantControl, participantIdentityControl, dbHelper, matchParticipantSummaryJunctionControl);
         int id = matchControl.SaveMatch(mdm, 1);
         MatchDetailsModel mdm2 = matchControl.GetMatchDetailsModel(148566213);
-//        Assert.assertTrue(mdm2.participants.get(0).getChampionId() == 254);
+        Assert.assertTrue(mdm2.participants.get(0).getChampionId() == 254);
     }
     
     @Test

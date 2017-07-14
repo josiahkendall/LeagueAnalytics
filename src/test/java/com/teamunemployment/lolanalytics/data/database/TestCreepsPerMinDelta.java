@@ -34,4 +34,12 @@ public class TestCreepsPerMinDelta {
 //        String correctQuery = "Insert into creepspermindeltas values (1.0, 2.0, 3.0, 4.0)";
 //        Mockito.verify(dbHelper, Mockito.times(1)).ExecuteSqlScript(correctQuery);
 //    }
+
+    @Test
+    public void AverageCreepsPerMin_CalculatesCorrectly() {
+
+        CreepsPerMinDeltas creepsPerMinDeltas = new CreepsPerMinDeltas();
+        creepsPerMinDeltas.setZeroToTen(12.5);
+    }
+
 }

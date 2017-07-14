@@ -80,7 +80,6 @@ public class CloudSqlServlet extends HttpServlet {
       // Set the url with the local MySQL database connection url when running locally
       url = System.getProperty("ae-cloudsql.local-database-url");
     }
-    log("connecting to: " + url);
     try (Connection conn = DriverManager.getConnection(url);
         PreparedStatement statementCreateVisit = conn.prepareStatement(createVisitSql)) {
       conn.createStatement().executeUpdate(createTableSql);

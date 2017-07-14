@@ -5,19 +5,7 @@
  */
 package crawler;
 
-import com.teamunemployment.lolanalytics.data.control.CreepsPerMinDeltaControl;
-import com.teamunemployment.lolanalytics.data.control.CsDiffPerMinDeltasControl;
-import com.teamunemployment.lolanalytics.data.control.GoldPerMinDeltasControl;
-import com.teamunemployment.lolanalytics.data.control.MasteriesControl;
-import com.teamunemployment.lolanalytics.data.control.MatchControl;
-import com.teamunemployment.lolanalytics.data.control.MatchDetailsControl;
-import com.teamunemployment.lolanalytics.data.control.MatchSummaryControl;
-import com.teamunemployment.lolanalytics.data.control.ParticipantControl;
-import com.teamunemployment.lolanalytics.data.control.ParticipantIdentityControl;
-import com.teamunemployment.lolanalytics.data.control.RuneControl;
-import com.teamunemployment.lolanalytics.data.control.StatControl;
-import com.teamunemployment.lolanalytics.data.control.TimelineControl;
-import com.teamunemployment.lolanalytics.data.control.XpPerMinDeltaControl;
+import com.teamunemployment.lolanalytics.data.control.*;
 import com.teamunemployment.lolanalytics.data.database.DBHelper;
 import com.teamunemployment.lolanalytics.models.MatchDetailsModel;
 import com.teamunemployment.lolanalytics.models.MatchSummary;
@@ -43,13 +31,11 @@ public class crawler {
         dbHelper = new DBHelper("jdbc:mysql://localhost:3306/local_lolanlaytics", "root", "Idnw2bh2");
         dbHelper.Connect();
         RuneControl runeControl = new RuneControl();
-        CreepsPerMinDeltaControl cpmControl = new CreepsPerMinDeltaControl(dbHelper);
-        CsDiffPerMinDeltasControl csdControl = new CsDiffPerMinDeltasControl(dbHelper);
-        GoldPerMinDeltasControl gpmControl = new GoldPerMinDeltasControl(dbHelper);
-        XpPerMinDeltaControl xpPerMinDeltaControl = new XpPerMinDeltaControl(dbHelper);
+        BaseDeltaControl baseDeltaControl = new BaseDeltaControl(dbHelper);
+        DeltaControl deltaControl =new DeltaControl(baseDeltaControl);
         StatControl statControl = new StatControl(dbHelper);
         MasteriesControl masteriesControl = new MasteriesControl();
-        TimelineControl timelineControl = new TimelineControl(cpmControl, csdControl, gpmControl, xpPerMinDeltaControl, dbHelper);
+        TimelineControl timelineControl = new TimelineControl(dbHelper, deltaControl);
 
         participantControl = new ParticipantControl(dbHelper, runeControl, timelineControl, statControl, masteriesControl);
         participantIdentityControl = new ParticipantIdentityControl(dbHelper);

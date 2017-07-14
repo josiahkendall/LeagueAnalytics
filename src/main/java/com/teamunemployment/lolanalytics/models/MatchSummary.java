@@ -15,5 +15,5 @@ public class MatchSummary {
     public long timestamp;
     public String lane;
     public String role;
-    
+    long summonerId;
 }

@@ -26,7 +26,7 @@ public class GoldPerMinDeltasControl {
 
     /**
      * Save CPMD
-     * @param creepsPerMinDeltas the CPMD stats for a match
+     * @param goldPerMinDeltas the CPMD stats for a match
      * @return The save identifier (-1 for failure, 0 for nothing, id for success)
      */
     public int saveGPMD(GoldPerMinDeltas goldPerMinDeltas) {
@@ -65,9 +65,9 @@ public class GoldPerMinDeltasControl {
                 GoldPerMinDeltas gpmd = new GoldPerMinDeltas();
                 gpmd.setId(GPMDId);
                 gpmd.setZeroToTen(resultSet.getDouble("ZeroToTen"));
-                gpmd.setZeroToTen(resultSet.getDouble("TenToTwenty"));
-                gpmd.setZeroToTen(resultSet.getDouble("TwentyToThirty"));
-                gpmd.setZeroToTen(resultSet.getDouble("ThirtyToEnd"));
+                gpmd.setTenToTwenty(resultSet.getDouble("TenToTwenty"));
+                gpmd.setTwentyToThirty(resultSet.getDouble("TwentyToThirty"));
+                gpmd.setThirtyToEnd(resultSet.getDouble("ThirtyToEnd"));
                 
                 return gpmd;
             }

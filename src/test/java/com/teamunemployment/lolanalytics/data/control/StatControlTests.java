@@ -23,7 +23,7 @@ public class StatControlTests {
      * PRepare for our tests
      */
     public void init() {
-        dbHelper = new DBHelper("jdbc:mysql://localhost:3306/local_lolanlaytics", "root", "Idnw2bh2");
+        dbHelper = new DBHelper("jdbc:mysql://localhost:3306/lolanalytics", "root", "Idnw2bh2");
         boolean canConnect = dbHelper.Connect();
         statControl = new StatControl(dbHelper);
     }
@@ -94,6 +94,5 @@ public class StatControlTests {
         
         Stats stat2 = statControl.getStats(id);
         Assert.assertTrue(stat2.getWardsPlaced() == 5);
-        
     }
 }

@@ -6,32 +6,32 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * Created by jek40 on 18/09/2016.
+ * @author Josiah Kendall
  */
 public class Timeline {
 
     private int id;
     @SerializedName("creepsPerMinDeltas")
     @Expose
-    private CreepsPerMinDeltas creepsPerMinDeltas;
+    private BaseDeltas creepsPerMinDeltas;
     @SerializedName("xpPerMinDeltas")
     @Expose
-    private XpPerMinDeltas xpPerMinDeltas;
+    private BaseDeltas xpPerMinDeltas;
     @SerializedName("goldPerMinDeltas")
     @Expose
-    private GoldPerMinDeltas goldPerMinDeltas;
+    private BaseDeltas goldPerMinDeltas;
     @SerializedName("csDiffPerMinDeltas")
     @Expose
-    private CsDiffPerMinDeltas csDiffPerMinDeltas;
+    private BaseDeltas csDiffPerMinDeltas;
     @SerializedName("xpDiffPerMinDeltas")
     @Expose
-    private XpDiffPerMinDeltas xpDiffPerMinDeltas;
+    private BaseDeltas xpDiffPerMinDeltas;
     @SerializedName("damageTakenPerMinDeltas")
     @Expose
-    private DamageTakenPerMinDeltas damageTakenPerMinDeltas;
+    private BaseDeltas damageTakenPerMinDeltas;
     @SerializedName("damageTakenDiffPerMinDeltas")
     @Expose
-    private DamageTakenDiffPerMinDeltas damageTakenDiffPerMinDeltas;
+    private BaseDeltas damageTakenDiffPerMinDeltas;
     @SerializedName("role")
     @Expose
     private String role;
@@ -51,7 +51,7 @@ public class Timeline {
      * @return
      * The creepsPerMinDeltas
      */
-    public CreepsPerMinDeltas getCreepsPerMinDeltas() {
+    public BaseDeltas getCreepsPerMinDeltas() {
         return creepsPerMinDeltas;
     }
 
@@ -60,7 +60,7 @@ public class Timeline {
      * @param creepsPerMinDeltas
      * The creepsPerMinDeltas
      */
-    public void setCreepsPerMinDeltas(CreepsPerMinDeltas creepsPerMinDeltas) {
+    public void setCreepsPerMinDeltas(BaseDeltas creepsPerMinDeltas) {
         this.creepsPerMinDeltas = creepsPerMinDeltas;
     }
 
@@ -69,7 +69,7 @@ public class Timeline {
      * @return
      * The xpPerMinDeltas
      */
-    public XpPerMinDeltas getXpPerMinDeltas() {
+    public BaseDeltas getXpPerMinDeltas() {
         return xpPerMinDeltas;
     }
 
@@ -78,7 +78,7 @@ public class Timeline {
      * @param xpPerMinDeltas
      * The xpPerMinDeltas
      */
-    public void setXpPerMinDeltas(XpPerMinDeltas xpPerMinDeltas) {
+    public void setXpPerMinDeltas(BaseDeltas xpPerMinDeltas) {
         this.xpPerMinDeltas = xpPerMinDeltas;
     }
 
@@ -87,7 +87,7 @@ public class Timeline {
      * @return
      * The goldPerMinDeltas
      */
-    public GoldPerMinDeltas getGoldPerMinDeltas() {
+    public BaseDeltas getGoldPerMinDeltas() {
         return goldPerMinDeltas;
     }
 
@@ -96,7 +96,7 @@ public class Timeline {
      * @param goldPerMinDeltas
      * The goldPerMinDeltas
      */
-    public void setGoldPerMinDeltas(GoldPerMinDeltas goldPerMinDeltas) {
+    public void setGoldPerMinDeltas(BaseDeltas goldPerMinDeltas) {
         this.goldPerMinDeltas = goldPerMinDeltas;
     }
 
@@ -105,7 +105,7 @@ public class Timeline {
      * @return
      * The csDiffPerMinDeltas
      */
-    public CsDiffPerMinDeltas getCsDiffPerMinDeltas() {
+    public BaseDeltas getCsDiffPerMinDeltas() {
         return csDiffPerMinDeltas;
     }
 
@@ -114,7 +114,7 @@ public class Timeline {
      * @param csDiffPerMinDeltas
      * The csDiffPerMinDeltas
      */
-    public void setCsDiffPerMinDeltas(CsDiffPerMinDeltas csDiffPerMinDeltas) {
+    public void setCsDiffPerMinDeltas(BaseDeltas csDiffPerMinDeltas) {
         this.csDiffPerMinDeltas = csDiffPerMinDeltas;
     }
 
@@ -123,7 +123,7 @@ public class Timeline {
      * @return
      * The xpDiffPerMinDeltas
      */
-    public XpDiffPerMinDeltas getXpDiffPerMinDeltas() {
+    public BaseDeltas getXpDiffPerMinDeltas() {
         return xpDiffPerMinDeltas;
     }
 
@@ -132,7 +132,7 @@ public class Timeline {
      * @param xpDiffPerMinDeltas
      * The xpDiffPerMinDeltas
      */
-    public void setXpDiffPerMinDeltas(XpDiffPerMinDeltas xpDiffPerMinDeltas) {
+    public void setXpDiffPerMinDeltas(BaseDeltas xpDiffPerMinDeltas) {
         this.xpDiffPerMinDeltas = xpDiffPerMinDeltas;
     }
 
@@ -141,7 +141,7 @@ public class Timeline {
      * @return
      * The damageTakenPerMinDeltas
      */
-    public DamageTakenPerMinDeltas getDamageTakenPerMinDeltas() {
+    public BaseDeltas getDamageTakenPerMinDeltas() {
         return damageTakenPerMinDeltas;
     }
 
@@ -150,7 +150,7 @@ public class Timeline {
      * @param damageTakenPerMinDeltas
      * The damageTakenPerMinDeltas
      */
-    public void setDamageTakenPerMinDeltas(DamageTakenPerMinDeltas damageTakenPerMinDeltas) {
+    public void setDamageTakenPerMinDeltas(BaseDeltas damageTakenPerMinDeltas) {
         this.damageTakenPerMinDeltas = damageTakenPerMinDeltas;
     }
 
@@ -159,7 +159,7 @@ public class Timeline {
      * @return
      * The damageTakenDiffPerMinDeltas
      */
-    public DamageTakenDiffPerMinDeltas getDamageTakenDiffPerMinDeltas() {
+    public BaseDeltas getDamageTakenDiffPerMinDeltas() {
         return damageTakenDiffPerMinDeltas;
     }
 
@@ -168,7 +168,7 @@ public class Timeline {
      * @param damageTakenDiffPerMinDeltas
      * The damageTakenDiffPerMinDeltas
      */
-    public void setDamageTakenDiffPerMinDeltas(DamageTakenDiffPerMinDeltas damageTakenDiffPerMinDeltas) {
+    public void setDamageTakenDiffPerMinDeltas(BaseDeltas damageTakenDiffPerMinDeltas) {
         this.damageTakenDiffPerMinDeltas = damageTakenDiffPerMinDeltas;
     }
 

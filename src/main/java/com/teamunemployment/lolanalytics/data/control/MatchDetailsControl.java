@@ -6,7 +6,6 @@
 package com.teamunemployment.lolanalytics.data.control;
 
 import com.teamunemployment.lolanalytics.data.database.DBHelper;
-import com.teamunemployment.lolanalytics.models.GeneralStats;
 import com.teamunemployment.lolanalytics.models.HeadToHeadStats;
 import com.teamunemployment.lolanalytics.models.MatchDetailsModel;
 import com.teamunemployment.lolanalytics.models.MatchParticipantSummaryJunctionModel;
@@ -17,8 +16,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -63,10 +60,8 @@ public class MatchDetailsControl {
                             + "queuetype,"
                             + "mapid,"
                             + "season,"
-                            + "matchversion,"
-                            + "participantsummary,"
-                            + "participantidentitysummaryidscsv)"
-                            + " values (%d, '%s', '%s', '%s', '%s', %d, %d, '%s', %d, '%s', '%s', '%s', '%s')",
+                            + "matchversion)"
+                            + " values (%d, '%s', '%s', '%s', '%s', %d, %d, '%s', %d, '%s', '%s')",
                     matchDetails.matchId,
                     matchDetails.region, 
                     matchDetails.platformId,
@@ -77,9 +72,7 @@ public class MatchDetailsControl {
                     matchDetails.queueType,
                     matchDetails.mapId,
                     matchDetails.season,
-                    matchDetails.matchVersion,
-                    1,
-                    participantIdentitiesCSV
+                    matchDetails.matchVersion
             );
             int result = dbHelper.ExecuteSqlScript(queryString);
             return result;
@@ -109,7 +102,7 @@ public class MatchDetailsControl {
                 matchModel.matchType = resultSet.getString("MatchType");
                 matchModel.matchVersion = resultSet.getString("MatchVersion");
                 matchModel.participantIdentities = loadParticipantIdentities(resultSet.getString("ParticipantIdentitySummaryIdsCSV"));
-                matchModel.participants = loadParticipants(resultSet.getString("ParticipantSummariesCSV"));
+                matchModel.participants = loadParticipants(matchId);
                 matchModel.platformId = resultSet.getString("PlatformId");
                 matchModel.queueType = resultSet.getString("QueueType");
                 matchModel.region = resultSet.getString("Region");
@@ -129,14 +122,8 @@ public class MatchDetailsControl {
      * @param idCSV The particpants for this match
      * @return The particpant objects
      */
-    private List<ParticipantSummary> loadParticipants(String idCSV) {
-        List<ParticipantSummary> participants = new ArrayList<>();
-        String [] splitIds = idCSV.split(",");
-        for (String id : splitIds) {
-            participants.add(participantControl.getParticipantSummary(Integer.parseInt(id)));
-        }
-        
-        return participants;
+    private ArrayList<ParticipantSummary> loadParticipants(long matchId) {
+        return participantControl.getParticipantSummariesForAMatch(matchId);
     }
     
     /**

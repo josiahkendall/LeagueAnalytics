@@ -31,7 +31,7 @@ public class PlayerControl {
 
     /**
      * Save CPMD
-     * @param creepsPerMinDeltas the CPMD stats for a match
+     * @param player the player to save
      * @return The save identifier (-1 for failure, 0 for nothing, id for success)
      */
     public int SavePlayer(PlayerParticipant player) {

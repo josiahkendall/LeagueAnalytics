@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="lolanalyticsv3" default="all">
+  
+  
+  <property file="lolanalyticsv3.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/*.lib/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/.bundle/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.ear"/>
+    <include name="*.apk"/>
+    <include name="*.zip"/>
+    <include name="*.swc"/>
+    <include name="*.ane"/>
+    <include name="*.egg"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.8" value="${jdk.home.1.8}/bin"/>
+  <path id="jdk.classpath.1.8">
+    <fileset dir="${jdk.home.1.8}">
+      <include name="jre/lib/charsets.jar"/>
+      <include name="jre/lib/deploy.jar"/>
+      <include name="jre/lib/javaws.jar"/>
+      <include name="jre/lib/jce.jar"/>
+      <include name="jre/lib/jfr.jar"/>
+      <include name="jre/lib/jfxswt.jar"/>
+      <include name="jre/lib/jsse.jar"/>
+      <include name="jre/lib/management-agent.jar"/>
+      <include name="jre/lib/plugin.jar"/>
+      <include name="jre/lib/resources.jar"/>
+      <include name="jre/lib/rt.jar"/>
+      <include name="jre/lib/ext/access-bridge-64.jar"/>
+      <include name="jre/lib/ext/cldrdata.jar"/>
+      <include name="jre/lib/ext/dnsns.jar"/>
+      <include name="jre/lib/ext/jaccess.jar"/>
+      <include name="jre/lib/ext/jfxrt.jar"/>
+      <include name="jre/lib/ext/localedata.jar"/>
+      <include name="jre/lib/ext/nashorn.jar"/>
+      <include name="jre/lib/ext/sunec.jar"/>
+      <include name="jre/lib/ext/sunjce_provider.jar"/>
+      <include name="jre/lib/ext/sunmscapi.jar"/>
+      <include name="jre/lib/ext/sunpkcs11.jar"/>
+      <include name="jre/lib/ext/zipfs.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.8}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.8}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.8"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.maven:_com.fasterxml.jackson.core:jackson-core:2.1.3.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/fasterxml/jackson/core/jackson-core/2.1.3/jackson-core-2.1.3.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.api-client:google-api-client:1.22.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/api-client/google-api-client/1.22.0/google-api-client-1.22.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.apis:google-api-services-sqladmin:v1beta4-rev25-1.22.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/apis/google-api-services-sqladmin/v1beta4-rev25-1.22.0/google-api-services-sqladmin-v1beta4-rev25-1.22.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.appengine:appengine-api-1.0-sdk:1.9.36.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/appengine/appengine-api-1.0-sdk/1.9.36/appengine-api-1.0-sdk-1.9.36.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.appengine:appengine-api-stubs:1.9.36.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/appengine/appengine-api-stubs/1.9.36/appengine-api-stubs-1.9.36.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.appengine:appengine-endpoints:1.9.36.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/appengine/appengine-endpoints/1.9.36/appengine-endpoints-1.9.36.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.appengine:appengine-testing:1.9.36.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/appengine/appengine-testing/1.9.36/appengine-testing-1.9.36.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.cloud.sql:mysql-socket-factory-core:1.0.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/cloud/sql/mysql-socket-factory-core/1.0.2/mysql-socket-factory-core-1.0.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.cloud.sql:mysql-socket-factory:1.0.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/cloud/sql/mysql-socket-factory/1.0.2/mysql-socket-factory-1.0.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.code.findbugs:jsr305:1.3.9.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.code.gson:gson:2.3.1.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.guava:guava-jdk5:17.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/guava/guava-jdk5/17.0/guava-jdk5-17.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.http-client:google-http-client-jackson2:1.22.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/http-client/google-http-client-jackson2/1.22.0/google-http-client-jackson2-1.22.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.http-client:google-http-client:1.22.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/http-client/google-http-client/1.22.0/google-http-client-1.22.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.oauth-client:google-oauth-client:1.22.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/oauth-client/google-oauth-client/1.22.0/google-oauth-client-1.22.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.squareup.okhttp3:okhttp:3.3.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/squareup/okhttp3/okhttp/3.3.0/okhttp-3.3.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.squareup.okhttp:okhttp:2.5.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/squareup/okhttp/okhttp/2.5.0/okhttp-2.5.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.squareup.okio:okio:1.8.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/squareup/okio/okio/1.8.0/okio-1.8.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.squareup.retrofit:retrofit:1.9.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/squareup/retrofit/retrofit/1.9.0/retrofit-1.9.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_commons-codec:commons-codec:1.3.classpath">
+    <pathelement location="${path.variable.maven_repository}/commons-codec/commons-codec/1.3/commons-codec-1.3.jar"/>
+  </path>
+  
+  <path id="library.maven:_javax.inject:javax.inject:1.classpath">
+    <pathelement location="${path.variable.maven_repository}/javax/inject/javax.inject/1/javax.inject-1.jar"/>
+  </path>
+  
+  <path id="library.maven:_javax.servlet:servlet-api:2.5.classpath">
+    <pathelement location="${path.variable.maven_repository}/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar"/>
+  </path>
+  
+  <path id="library.maven:_javax:javaee-web-api:6.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/javax/javaee-web-api/6.0/javaee-web-api-6.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_junit:junit:4.12.classpath">
+    <pathelement location="${path.variable.maven_repository}/junit/junit/4.12/junit-4.12.jar"/>
+  </path>
+  
+  <path id="library.maven:_mysql:mysql-connector-java:5.1.6.classpath">
+    <pathelement location="${path.variable.maven_repository}/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.apache.httpcomponents:httpclient:4.0.1.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/apache/httpcomponents/httpclient/4.0.1/httpclient-4.0.1.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.apache.httpcomponents:httpcore:4.0.1.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.json:json:20140107.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/json/json/20140107/json-20140107.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.mockito:mockito-all:1.9.5.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/mockito/mockito-all/1.9.5/mockito-all-1.9.5.jar"/>
+  </path>
+  
+  
+  <!-- Application Server Libraries -->
+  <!-- Register Custom Compiler Taskdefs -->
+  <property name="javac2.home" value="${idea.home}/lib"/>
+  <path id="javac2.classpath">
+    <pathelement location="${javac2.home}/javac2.jar"/>
+    <pathelement location="${javac2.home}/jdom.jar"/>
+    <pathelement location="${javac2.home}/asm4-all.jar"/>
+    <pathelement location="${javac2.home}/jgoodies-forms.jar"/>
+  </path>
+  <target name="register.custom.compilers">
+    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+    <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/>
+  </target>
+  
+  <!-- Modules -->
+  
+  <import file="${basedir}/module_lolanalyticsv3.xml"/>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.lolanalyticsv3, clean.artifact.lolanalyticsv3:war_exploded" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.lolanalyticsv3" description="build all modules"/>
+  
+  <target name="init.artifacts">
+    <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
+    <property name="artifact.output.lolanalyticsv3:war" value="${basedir}/target"/>
+    <property name="artifact.output.lolanalyticsv3:war_exploded" value="${basedir}/target/lolanalyticsv3-1.0-SNAPSHOT"/>
+    <mkdir dir="${artifacts.temp.dir}"/>
+    <property name="temp.jar.path.lolanalyticsv3-1.0-SNAPSHOT.war" value="${artifacts.temp.dir}/lolanalyticsv3-1.0-SNAPSHOT.war"/>
+  </target>
+  
+  <target name="clean.artifact.lolanalyticsv3:war_exploded" description="clean lolanalyticsv3:war exploded artifact output">
+    <delete dir="${artifact.output.lolanalyticsv3:war_exploded}"/>
+  </target>
+  
+  <target name="artifact.lolanalyticsv3:war" depends="init.artifacts, artifact.lolanalyticsv3:war_exploded" description="Build &#39;lolanalyticsv3:war&#39; artifact">
+    <property name="artifact.temp.output.lolanalyticsv3:war" value="${artifacts.temp.dir}/lolanalyticsv3_war"/>
+    <mkdir dir="${artifact.temp.output.lolanalyticsv3:war}"/>
+    <zip destfile="${temp.jar.path.lolanalyticsv3-1.0-SNAPSHOT.war}">
+      <zipfileset dir="${artifact.output.lolanalyticsv3:war_exploded}"/>
+    </zip>
+    <copy file="${temp.jar.path.lolanalyticsv3-1.0-SNAPSHOT.war}" tofile="${artifact.temp.output.lolanalyticsv3:war}/lolanalyticsv3-1.0-SNAPSHOT.war"/>
+  </target>
+  
+  <target name="artifact.lolanalyticsv3:war_exploded" depends="init.artifacts, compile.module.lolanalyticsv3" description="Build &#39;lolanalyticsv3:war exploded&#39; artifact">
+    <mkdir dir="${artifact.output.lolanalyticsv3:war_exploded}"/>
+    <mkdir dir="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF"/>
+    <mkdir dir="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/classes"/>
+    <copy todir="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/classes">
+      <fileset dir="${lolanalyticsv3.output.dir}"/>
+    </copy>
+    <mkdir dir="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib"/>
+    <copy file="${path.variable.maven_repository}/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/mysql-connector-java-5.1.6.jar"/>
+    <copy file="${path.variable.maven_repository}/com/google/cloud/sql/mysql-socket-factory/1.0.2/mysql-socket-factory-1.0.2.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/mysql-socket-factory-1.0.2.jar"/>
+    <copy file="${path.variable.maven_repository}/com/google/cloud/sql/mysql-socket-factory-core/1.0.2/mysql-socket-factory-core-1.0.2.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/mysql-socket-factory-core-1.0.2.jar"/>
+    <copy file="${path.variable.maven_repository}/com/google/apis/google-api-services-sqladmin/v1beta4-rev25-1.22.0/google-api-services-sqladmin-v1beta4-rev25-1.22.0.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/google-api-services-sqladmin-v1beta4-rev25-1.22.0.jar"/>
+    <copy file="${path.variable.maven_repository}/com/google/api-client/google-api-client/1.22.0/google-api-client-1.22.0.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/google-api-client-1.22.0.jar"/>
+    <copy file="${path.variable.maven_repository}/com/google/oauth-client/google-oauth-client/1.22.0/google-oauth-client-1.22.0.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/google-oauth-client-1.22.0.jar"/>
+    <copy file="${path.variable.maven_repository}/com/google/http-client/google-http-client/1.22.0/google-http-client-1.22.0.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/google-http-client-1.22.0.jar"/>
+    <copy file="${path.variable.maven_repository}/org/apache/httpcomponents/httpclient/4.0.1/httpclient-4.0.1.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/httpclient-4.0.1.jar"/>
+    <copy file="${path.variable.maven_repository}/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/httpcore-4.0.1.jar"/>
+    <copy file="${path.variable.maven_repository}/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/commons-logging-1.1.1.jar"/>
+    <copy file="${path.variable.maven_repository}/commons-codec/commons-codec/1.3/commons-codec-1.3.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/commons-codec-1.3.jar"/>
+    <copy file="${path.variable.maven_repository}/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/jsr305-1.3.9.jar"/>
+    <copy file="${path.variable.maven_repository}/com/google/http-client/google-http-client-jackson2/1.22.0/google-http-client-jackson2-1.22.0.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/google-http-client-jackson2-1.22.0.jar"/>
+    <copy file="${path.variable.maven_repository}/com/fasterxml/jackson/core/jackson-core/2.1.3/jackson-core-2.1.3.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/jackson-core-2.1.3.jar"/>
+    <copy file="${path.variable.maven_repository}/com/google/guava/guava-jdk5/17.0/guava-jdk5-17.0.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/guava-jdk5-17.0.jar"/>
+    <copy file="${path.variable.maven_repository}/com/google/appengine/appengine-api-1.0-sdk/1.9.36/appengine-api-1.0-sdk-1.9.36.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/appengine-api-1.0-sdk-1.9.36.jar"/>
+    <copy file="${path.variable.maven_repository}/com/google/appengine/appengine-endpoints/1.9.36/appengine-endpoints-1.9.36.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/appengine-endpoints-1.9.36.jar"/>
+    <copy file="${path.variable.maven_repository}/javax/inject/javax.inject/1/javax.inject-1.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/javax.inject-1.jar"/>
+    <copy file="${path.variable.maven_repository}/com/squareup/retrofit/retrofit/1.9.0/retrofit-1.9.0.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/retrofit-1.9.0.jar"/>
+    <copy file="${path.variable.maven_repository}/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/gson-2.3.1.jar"/>
+    <copy file="${path.variable.maven_repository}/com/squareup/okio/okio/1.8.0/okio-1.8.0.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/okio-1.8.0.jar"/>
+    <copy file="${path.variable.maven_repository}/com/squareup/okhttp3/okhttp/3.3.0/okhttp-3.3.0.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/okhttp-3.3.0.jar"/>
+    <copy file="${path.variable.maven_repository}/com/squareup/okhttp/okhttp/2.5.0/okhttp-2.5.0.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/okhttp-2.5.0.jar"/>
+    <copy file="${path.variable.maven_repository}/org/json/json/20140107/json-20140107.jar" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/lib/json-20140107.jar"/>
+    <mkdir dir="${artifact.output.lolanalyticsv3:war_exploded}/META-INF"/>
+    <copy file="${basedir}/target/MANIFEST.MF" tofile="${artifact.output.lolanalyticsv3:war_exploded}/META-INF/MANIFEST.MF"/>
+    <copy todir="${artifact.output.lolanalyticsv3:war_exploded}">
+      <fileset dir="${basedir}/src/main/webapp"/>
+    </copy>
+    <mkdir dir="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF"/>
+    <copy file="${basedir}/src/main/webapp/WEB-INF/web.xml" tofile="${artifact.output.lolanalyticsv3:war_exploded}/WEB-INF/web.xml"/>
+  </target>
+  
+  <target name="build.all.artifacts" depends="artifact.lolanalyticsv3:war, artifact.lolanalyticsv3:war_exploded" description="Build all artifacts">
+    <mkdir dir="${artifact.output.lolanalyticsv3:war}"/>
+    <copy todir="${artifact.output.lolanalyticsv3:war}">
+      <fileset dir="${artifact.temp.output.lolanalyticsv3:war}"/>
+    </copy>
+    
+    <!-- Delete temporary files -->
+    <delete dir="${artifacts.temp.dir}"/>
+  </target>
+  
+  <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
+</project>

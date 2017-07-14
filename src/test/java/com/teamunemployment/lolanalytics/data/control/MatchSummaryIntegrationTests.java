@@ -24,7 +24,7 @@ public class MatchSummaryIntegrationTests {
      * PRepare for our tests
      */
     public void init() {
-        dbHelper = new DBHelper("jdbc:mysql://localhost:3306/local_lolanlaytics", "root", "Idnw2bh2");
+        dbHelper = new DBHelper();
         boolean canConnect = dbHelper.Connect();
         matchSummaryControl = new MatchSummaryControl(dbHelper);
     }
@@ -56,7 +56,7 @@ public class MatchSummaryIntegrationTests {
         MatchSummary matchSummary1 = new MatchSummary();
         matchSummary1.champion = 1;
         matchSummary1.lane = "TOP";
-        matchSummary1.matchId = 1;
+        matchSummary1.matchId = 4;
         matchSummary1.platformId = "OCE";
         matchSummary1.queue = "RANKED";
         matchSummary1.region = "OCE";
@@ -67,7 +67,7 @@ public class MatchSummaryIntegrationTests {
         MatchSummary matchSummary2 = new MatchSummary();
         matchSummary2.champion = 1;
         matchSummary2.lane = "TOP";
-        matchSummary2.matchId = 1;
+        matchSummary2.matchId = 3;
         matchSummary2.platformId = "OCE";
         matchSummary2.queue = "RANKED";
         matchSummary2.region = "OCE";
@@ -78,7 +78,7 @@ public class MatchSummaryIntegrationTests {
         MatchSummary matchSummary3 = new MatchSummary();
         matchSummary3.champion = 1;
         matchSummary3.lane = "TOP";
-        matchSummary3.matchId = 1;
+        matchSummary3.matchId = 2;
         matchSummary3.platformId = "OCE";
         matchSummary3.queue = "RANKED";
         matchSummary3.region = "OCE";

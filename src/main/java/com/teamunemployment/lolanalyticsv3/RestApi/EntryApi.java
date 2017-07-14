@@ -5,38 +5,25 @@
  */
 package com.teamunemployment.lolanalyticsv3.RestApi;
 
-import com.google.api.client.http.HttpResponse;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
-import com.google.appengine.api.utils.SystemProperty;
 import com.google.gson.GsonBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.teamunemployment.lolanalytics.data.Role;
 import com.teamunemployment.lolanalytics.data.SummonerTableAccessor;
 import com.teamunemployment.lolanalytics.data.TestStats.TestStats;
 import com.teamunemployment.lolanalytics.data.control.*;
 import com.teamunemployment.lolanalytics.data.control.Summoner.SummonerInfoControl;
 import com.teamunemployment.lolanalytics.data.database.DBHelper;
-import com.teamunemployment.lolanalytics.data.statics;
 import com.teamunemployment.lolanalytics.models.*;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import com.teamunemployment.lolanalytics.models.Beans.*;
-import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.appengine.UrlFetchClient;
 import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
-
-import javax.servlet.ServletException;
 
 
 /**
@@ -73,13 +60,11 @@ public class EntryApi {
         // Create the connection to our database.
         dbHelper.Connect();
         RuneControl runeControl = new RuneControl();
-        CreepsPerMinDeltaControl cpmControl = new CreepsPerMinDeltaControl(dbHelper);
-        CsDiffPerMinDeltasControl csdControl = new CsDiffPerMinDeltasControl(dbHelper);
-        GoldPerMinDeltasControl gpmControl = new GoldPerMinDeltasControl(dbHelper);
-        XpPerMinDeltaControl xpPerMinDeltaControl = new XpPerMinDeltaControl(dbHelper);
+        BaseDeltaControl baseDeltaControl = new BaseDeltaControl(dbHelper);
+        DeltaControl deltaControl =new DeltaControl(baseDeltaControl);
         StatControl statControl = new StatControl(dbHelper);
         MasteriesControl masteriesControl = new MasteriesControl();
-        TimelineControl timelineControl = new TimelineControl(cpmControl, csdControl, gpmControl, xpPerMinDeltaControl, dbHelper);
+        TimelineControl timelineControl = new TimelineControl(dbHelper,deltaControl);
         summonerTableAccessor = new SummonerTableAccessor(dbHelper);
         summonerInfoControl = new SummonerInfoControl();
         participantControl = new ParticipantControl(dbHelper, runeControl, timelineControl, statControl, masteriesControl);
@@ -111,6 +96,8 @@ public class EntryApi {
         // TODO and this
         return new StringResponse();
     }
+
+
     
     /**
      * Fetch the head to head stats for a user in a specified role.
@@ -165,7 +152,7 @@ public class EntryApi {
         RestAdapter.Builder builder = new RestAdapter.Builder()
                 .setEndpoint("https://oce.api.pvp.net/api/lol/oce/v2.2")
                 .setConverter(new GsonConverter(new GsonBuilder().create()))
-                .setClient(new UrlFetchClient()); //UrlFetchClient
+                .setClient(new OkClient()); //UrlFetchClient
                   
         RestAdapter serviceAdapter = builder.build();
         MatchService service = serviceAdapter.create(MatchService.class);
@@ -257,6 +244,7 @@ public class EntryApi {
             TestStats testStats = new TestStats();
             return testStats.FetchSupportStats();
         }
+        //
         return null;
     }
 
@@ -266,4 +254,41 @@ public class EntryApi {
         return testStats.FetchWinRate(role);
     }
 
+    @ApiMethod(name = "FetchMatchListForSummonerInRole", httpMethod = ApiMethod.HttpMethod.GET, path = "FetchMatchList/{UserId}/{Role}")
+    public List<MatchIdWrapper> FetchMatchListForSummonerInRole(@Named("UserId") long userId, @Named("Role") String role) {
+        if (userId == -1) {
+            TestStats testStats = new TestStats();
+            return testStats.GetMatchListForSummonerInRole(role);
+        }
+        return null;
+    }
+
+    @ApiMethod(name = "FetchPerformanceForUserInASpecificRoleInASpecificMatch", httpMethod = ApiMethod.HttpMethod.GET, path = "FetchPerformance/{MatchId}/{UserId}")
+    public PerformanceSummary FetchPerformanceSummary(@Named("MatchId") long matchId, @Named("UserId") long userId) {
+        if (userId == -1) {
+            TestStats testStats = new TestStats();
+            return testStats.getPerformanceSummaryForMatch();
+        }
+
+        return null;
+    }
+
+    @ApiMethod(name = "GetStatHistory", httpMethod = ApiMethod.HttpMethod.GET, path = "GetStatHistory/{Role}/{SummonerId}/{StatId}")
+    public StatCollection GetStatHistory(@Named("Role") int role, @Named("SummonerId") long summonerId, @Named("StatId") int statId) {
+        if (summonerId == -1) {
+            TestStats testStats = new TestStats();
+            return testStats.getTestStatCollection(statId);
+        }
+
+        return null;
+    }
+
+    @ApiMethod(name ="FetchStatDefinitions", httpMethod = ApiMethod.HttpMethod.GET, path = "FetchStatDefinitions/{SummonerId}/{Role}")
+    public StatDefinitionWrapper FetchStatDefinitions(@Named("SummonerId") long summonerId, @Named("Role") int role) {
+        if (summonerId == -1) {
+            TestStats testStats = new TestStats();
+            return  testStats.getStatDefinitions();
+        }
+        return null;
+    }
 }

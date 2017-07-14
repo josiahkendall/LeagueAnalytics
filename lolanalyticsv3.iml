@@ -32,7 +32,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.6" level="project" />
+    <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.40" level="project" />
     <orderEntry type="library" name="Maven: com.google.cloud.sql:mysql-socket-factory:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.cloud.sql:mysql-socket-factory-core:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.apis:google-api-services-sqladmin:v1beta4-rev25-1.22.0" level="project" />

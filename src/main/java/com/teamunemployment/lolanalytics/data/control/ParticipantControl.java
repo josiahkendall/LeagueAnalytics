@@ -66,8 +66,9 @@ public class ParticipantControl {
                             + "StatId,"
                             + "ParticipantId,"
                             + "SummonerId,"
-                            + "Season)"
-                            + " values (%d, %d, %d, %d, '%s', '%s', %d, %d, %d, '%s')",
+                            + "Season, " +
+                            "MatchId)"
+                            + " values (%d, %d, %d, %d, '%s', '%s', %d, %d, %d, '%s', %d)",
                     participantSummary.getTeamId(),
                     participantSummary.getSpell1Id(),
                     participantSummary.getSpell2Id(),
@@ -77,7 +78,8 @@ public class ParticipantControl {
                     statsId,
                     participantSummary.getParticipantId(),
                     summonerId,
-                    season
+                    season,
+                    participantSummary.getMatchId()
             );
             int result = dbhelper.ExecuteSqlScript(queryString);
             return result;
@@ -98,10 +100,52 @@ public class ParticipantControl {
 //            RuneControl
 //        }
 //    }
-    
+
+
+    /**
+     * Fetch all participants for a match
+     * @param matchId The id of the required summoner.
+     * @return A summoner object representing the requested summoner, or null
+     * if participants were not found for that match.
+     */
+    public ArrayList<ParticipantSummary> getParticipantSummariesForAMatch(long matchId) {
+        try {
+            String query = "SELECT * from participantsummary WHERE MatchId = " + matchId;
+            ArrayList<ParticipantSummary> participantSummaries = new ArrayList<>();
+            ResultSet resultSet = dbhelper.ExecuteSqlQuery(query);
+            while (resultSet.next()) {
+                ParticipantSummary participantSummary = new ParticipantSummary();
+                participantSummary.setId(resultSet.getInt("Id"));
+                participantSummary.setChampionId(resultSet.getInt("ChampionId"));
+                participantSummary.setHighestAchievedSeasonTier(resultSet.getString("HighestAchievedSeasonTier"));
+                participantSummary.setSpell1Id(resultSet.getInt("Spell1Id"));
+                participantSummary.setSpell2Id(resultSet.getInt("Spell2Id"));
+                participantSummary.setSummonerId(resultSet.getLong("SummonerId"));
+                int statId = resultSet.getInt("StatId");
+                // Get stats
+                Stats stats = statControl.getStats(statId);
+                participantSummary.setStats(stats);
+
+                participantSummary.setTeamId(resultSet.getInt("TeamId"));
+
+                int timelineId = resultSet.getInt("TimelineId");
+                Timeline timeline = timelineControl.getTimeline(timelineId);
+                participantSummary.setTimeline(timeline);
+
+                participantSummaries.add(participantSummary);
+            }
+            return participantSummaries;
+
+        } catch (SQLException | IllegalStateException ex) {
+            System.out.println("An error occurred: " + ex.getMessage());
+        }
+
+        return null;
+    }
+
     /**
      * Fetch a participant by the given id.
-     * @param summonerId The id of the required summoner.
+     * @param participantId The id of the required participant.
      * @return A summoner object representing the requested summoner, or null 
      * if summoner was not found.
      */

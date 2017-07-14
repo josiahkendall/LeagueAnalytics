@@ -24,7 +24,7 @@ public class ParticipantIdentitySummaryTests {
      * PRepare for our tests
      */
     public void init() {
-        dbHelper = new DBHelper("jdbc:mysql://localhost:3306/local_lolanlaytics", "root", "Idnw2bh2");
+        dbHelper = new DBHelper("jdbc:mysql://localhost:3306/lolanalytics", "root", "Idnw2bh2");
         boolean canConnect = dbHelper.Connect();
     }
     
@@ -33,23 +33,26 @@ public class ParticipantIdentitySummaryTests {
         
         init();
         ParticipantIdentityControl participantIdentityControl = new ParticipantIdentityControl(dbHelper);
-        
+
+        PlayerParticipant playerParticipant = new PlayerParticipant();
+        playerParticipant.summonerId = 1553;
+        playerParticipant.summonerName = "test";
         ParticipantIdentitySummary participantIdentitySummary = new ParticipantIdentitySummary();
         participantIdentitySummary.matchId = 123456;
         participantIdentitySummary.participantId = 1;
-        participantIdentitySummary.player = new PlayerParticipant();
+        participantIdentitySummary.player = playerParticipant;
         participantIdentitySummary.summonerId = 1553;
         
         ParticipantIdentitySummary participantIdentitySummary2 = new ParticipantIdentitySummary();
         participantIdentitySummary2.matchId = 1234568;
         participantIdentitySummary2.participantId = 1;
-        participantIdentitySummary2.player = new PlayerParticipant();
+        participantIdentitySummary2.player = playerParticipant;
         participantIdentitySummary2.summonerId = 1553;
         
         ParticipantIdentitySummary participantIdentitySummary3 = new ParticipantIdentitySummary();
         participantIdentitySummary3.matchId = 1234567;
         participantIdentitySummary3.participantId = 1;
-        participantIdentitySummary3.player = new PlayerParticipant();
+        participantIdentitySummary3.player = playerParticipant;
         participantIdentitySummary3.summonerId = 1553;
         
         participantIdentityControl.SaveParticipantIdentity(participantIdentitySummary);

@@ -19,7 +19,7 @@ public class DatabaseTests {
     
     @Test
     public void TestLocalDBConnection() {
-        DBHelper dbHelper = new DBHelper("jdbc:mysql://localhost:3306/local_lolanlaytics", "root", "Idnw2bh2");
+        DBHelper dbHelper = new DBHelper();
         boolean canConnect = dbHelper.Connect();
         Assert.assertTrue(canConnect);
     }
@@ -36,7 +36,7 @@ public class DatabaseTests {
     
     @Test
     public void TestThatWeCanSavePlayer() throws SQLException {
-        DBHelper dbHelper = new DBHelper("jdbc:mysql://localhost:3306/local_lolanlaytics", "root", "Idnw2bh2");
+        DBHelper dbHelper = new DBHelper();
         boolean canConnect = dbHelper.Connect();
         Assert.assertTrue(canConnect);
         
